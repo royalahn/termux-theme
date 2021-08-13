@@ -2,7 +2,7 @@
 termux-setup-storage
 
 apt update
-apt install -y git zsh
+apt install -y git zsh vim
 
 mv "$HOME/.termux" "$HOME/.termux.bak.$(date +%Y.%m.%d-%H:%M:%S)"
 cp -R "./.termux" "$HOME/.termux"
