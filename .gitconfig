@@ -1,0 +1,20 @@
+[alias]
+	co = checkout
+	rb = rebase -i
+	st = status
+	cm = commit
+	pl = pull
+	ps = push
+	lg = log --graph --abbrev-commit --decorate --format=format:'%C(cyan)%h%C(reset) - %C(green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all
+	lgn = lg --name-status
+	ad = add
+	tg = tag -n
+	df = diff
+	dfc = diff --color-words
+	dfs = diff --staged
+	dfsc = diff --staged --color-words
+	br = branch
+	nfmerge = merge --no-ff
+
+[core]
+	autocrlf = input

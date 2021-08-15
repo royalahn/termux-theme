@@ -35,6 +35,10 @@ echo -e "\n\n# Change shell to zsh\n\n"
 
 chsh -s zsh
 
+echo -e "\n\n# Copy git config\n\n"
+
+cp .gitconfig "$HOME"
+
 echo -e "# Please restart Termux"
 
 exit
