@@ -4,7 +4,7 @@ termux-setup-storage
 echo -e "\n\n# Install used programs\n\n"
 
 apt update
-apt install -y git zsh vim screenfetch neofetch openssh sshpass
+apt install -y git zsh vim screenfetch neofetch openssh sshpass htop
 
 echo -e "\n\n# Copy theme and font\n\n"
 
