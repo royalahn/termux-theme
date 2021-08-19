@@ -3,7 +3,7 @@
 # Install oh-my-zsh
 echo -e "\n\n# Install oh-my-zsh\n\n"
 
-git clone https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
+git clone https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh --depth 1
 
 cp ~/.zshrc ~/.zshrc.orig
 cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
@@ -20,9 +20,9 @@ sed -i 's/robbyrussell/agnoster/' ~/.zshrc
 # Install oh-my-zsh plugins
 echo -e "\n\n# Install oh-my-zsh plugins\n\n"
 
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting --depth 1
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions --depth 1
+git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions --depth 1
 
 # Update .zshrc to use plugins
 echo -e "\n\n# Update .zshrc to use plugins\n\n"
