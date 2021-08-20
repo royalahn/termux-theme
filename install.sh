@@ -6,15 +6,16 @@ BLACK='\e[1;30m'        # Black
 RED='\e[1;31m'          # Red
 GREEN='\e[1;32m'        # Green
 YELLOW='\e[1;33m'       # Yellow
-BLUE='\e[1;34m'         # Blue
+BLUE='\e[0;34m'         # Blue
 PURPLE='\e[1;35m'       # Purple
 CYAN='\e[1;36m'         # Cyan
 WHITE='\e[1;37m'        # White
 
 # Functions
-error   () { echo -e "${RED}Error ${*}${NC}";exit 1 ;:;}
-warning () { echo -e "${YELLOW}Warning ${*}${NC}";:;}
-info    () { echo -e "${GREEN}---";echo -e "# ${*}";echo -e "---${NC}";:; }
+error   () { echo -e "${RED}Error ${*}${NC}";exit 1;:; }
+warning () { echo -e "${YELLOW}Warning ${*}${NC}";:; }
+info    () { echo -e "${GREEN}-----";echo -e "# ${*}";echo -e "-----${NC}";:; }
+log     () { echo -e "${BLUE}${*}${NC}";:; }
 
 # termux-setup-storage
 termux-setup-storage
@@ -24,6 +25,7 @@ info "Install used programs"
 
 apt update
 apt install -y git zsh vim screenfetch neofetch openssh sshpass htop
+log "apt install -y git zsh vim screenfetch neofetch openssh sshpass htop"
 
 # Copy termux theme and font
 info "Copy termux theme and font"
@@ -42,6 +44,7 @@ cp "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" "$HOME/.zshrc"
 info "Change theme to agnoster"
 
 sed -i 's/robbyrussell/agnoster/' ~/.zshrc
+log "sed -i 's/robbyrussell/agnoster/' ~/.zshrc"
 
 # Install oh-my-zsh plugins
 info "Install oh-my-zsh plugins"
@@ -54,16 +57,19 @@ git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:=~/.oh-my-zs
 info "Use plugins"
 
 sed -i 's/(git)/(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/' ~/.zshrc
+log "sed -i 's/(git)/(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/' ~/.zshrc"
 
 # Change shell to zsh
 info "Change shell to zsh"
 
 chsh -s zsh
+log "chsh -s zsh"
 
 # Copy git config
 info "Copy git config"
 
 cp .gitconfig "$HOME"
+log "cp .gitconfig $HOME"
 
 # Done
 info "Please restart Termux"
