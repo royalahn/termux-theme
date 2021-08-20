@@ -39,8 +39,13 @@ sed -i 's/robbyrussell/agnoster/' ~/.zshrc
 # Install oh-my-zsh plugins
 info "Install oh-my-zsh plugins"
 
+log "zsh-syntax-highlighting"
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting --depth 1
+
+log "zsh-autosuggestions"
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions --depth 1
+
+log "zsh-completions"
 git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions --depth 1
 
 # Use oh-my-zsh plugins
