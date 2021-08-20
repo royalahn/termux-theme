@@ -12,8 +12,8 @@ CYAN='\e[1;36m'         # Cyan
 WHITE='\e[1;37m'        # White
 
 # Functions
-error   () { echo -e "${RED}(Error) ${*}${NC}";exit 1;:; }
-warning () { echo -e "${YELLOW}(Warning) ${*}${NC}";:; }
+error   () { echo -e "${RED}${*}${NC}";exit 1;:; }
+warning () { echo -e "${YELLOW}${*}${NC}";:; }
 info    () { echo -e "${GREEN}-----";echo -e "# ${*}";echo -e "-----${NC}";:; }
 log     () { echo -e "${BLUE}${*}${NC}";:; }
 
