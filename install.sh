@@ -49,6 +49,12 @@ info "Change theme to agnoster"
 log "sed -i 's/robbyrussell/agnoster/' ~/.zshrc"
 sed -i 's/robbyrussell/agnoster/' ~/.zshrc
 
+# Change prompt_context
+info "Change prompt_context"
+
+log "echo 'prompt_context() {}' >> ~/.zshrc"
+echo 'prompt_context() {}' >> ~/.zshrc
+
 # Install oh-my-zsh plugins
 info "Install oh-my-zsh plugins"
 
