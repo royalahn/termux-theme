@@ -85,6 +85,12 @@ info "Copy git config"
 log "cp .gitconfig '$HOME'"
 cp .gitconfig "$HOME"
 
+# Copy vim config
+info "Copy vim config"
+
+log "cp .vimrc '$HOME'"
+cp .vimrc "$HOME"
+
 # Done
 warning "Please restart Termux"
 
