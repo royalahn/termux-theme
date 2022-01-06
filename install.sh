@@ -91,6 +91,11 @@ info "Copy vim config"
 log "cp .vimrc '$HOME'"
 cp .vimrc "$HOME"
 
+# Set alias
+info "Set alias"
+
+echo 'alias ssh1="sshpass -p password ssh user@localhost"' >> ~/.zshrc
+
 # Done
 warning "Please restart Termux"
 
