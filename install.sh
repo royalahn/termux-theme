@@ -67,6 +67,10 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-m
 log "zsh-completions"
 git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions --depth 1
 
+log "fzf"
+git clone https://github.com/junegunn/fzf.git ~/.fzf --depth 1
+~/.fzf/install --all
+
 # Use plugins
 info "Use plugins"
 
