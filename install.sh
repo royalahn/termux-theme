@@ -98,7 +98,7 @@ cp .vimrc "$HOME"
 # Set alias
 info "Set alias"
 
-echo "alias ssh1=\"sshpass -p password ssh 'StrictHostKeyChecking=no' user@localhost\"" >> ~/.zshrc
+echo "alias ssh1=\"sshpass -p password ssh -o 'StrictHostKeyChecking=no' user@localhost\"" >> ~/.zshrc
 
 # Done
 warning "Please restart Termux"
