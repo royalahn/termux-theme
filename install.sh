@@ -17,6 +17,12 @@ warning () { echo -e "${YELLOW}${*}${NC}";:; }
 info    () { echo -e "${GREEN}-----";echo -e "# ${*}";echo -e "-----${NC}";:; }
 log     () { echo -e "${BLUE}${*}${NC}";:; }
 
+# Termux package update
+info "Termux package update"
+
+log "pkg up -y"
+pkg up -y
+
 # termux-setup-storage
 info "termux-setup-storage"
 
