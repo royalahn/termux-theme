@@ -34,7 +34,7 @@ info "Install used programs"
 
 log "apt install -y git zsh vim screenfetch neofetch openssh sshpass htop"
 apt update
-apt install -y git zsh vim screenfetch neofetch openssh sshpass htop
+apt install -y git zsh vim screenfetch neofetch openssh sshpass htop netcat-openbsd
 
 # Copy termux theme and font
 info "Copy termux theme and font"
