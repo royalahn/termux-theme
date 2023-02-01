@@ -32,9 +32,9 @@ termux-setup-storage
 # Install used programs
 info "Install used programs"
 
-log "apt install -y git zsh vim screenfetch neofetch openssh sshpass htop"
+log "apt install -y git zsh vim screenfetch neofetch openssh sshpass htop wget netcat-openbsd"
 apt update
-apt install -y git zsh vim screenfetch neofetch openssh sshpass htop netcat-openbsd
+apt install -y git zsh vim screenfetch neofetch openssh sshpass htop wget netcat-openbsd
 
 # Copy termux theme and font
 info "Copy termux theme and font"
