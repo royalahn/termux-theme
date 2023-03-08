@@ -55,8 +55,8 @@ git clone https://github.com/junegunn/fzf.git ~/.fzf --depth 1
 # Use oh-my-zsh plugins
 info "Use oh-my-zsh plugins"
 
-log "sed -i 's/(git)/(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/' ~/.zshrc"
-sed -i 's/(git)/(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/' ~/.zshrc
+log "sed -i 's/(git)/(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions kubectl)/' ~/.zshrc"
+sed -i 's/(git)/(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions kubectl)/' ~/.zshrc
 
 # Done
 warning "Done"

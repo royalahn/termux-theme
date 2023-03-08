@@ -32,7 +32,7 @@ termux-setup-storage
 # Install used programs
 info "Install used programs"
 
-log "apt install -y git zsh vim screenfetch neofetch openssh sshpass htop wget netcat-openbsd"
+log "apt install -y git zsh vim screenfetch neofetch openssh sshpass htop wget netcat-openbsd kubectl"
 apt update
 apt install -y git zsh vim screenfetch neofetch openssh sshpass htop wget netcat-openbsd
 
@@ -80,8 +80,8 @@ git clone https://github.com/junegunn/fzf.git ~/.fzf --depth 1
 # Use plugins
 info "Use plugins"
 
-log "sed -i 's/(git)/(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/' ~/.zshrc"
-sed -i 's/(git)/(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/' ~/.zshrc
+log "sed -i 's/(git)/(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions kubectl)/' ~/.zshrc"
+sed -i 's/(git)/(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions kubectl)/' ~/.zshrc
 
 # Change shell to zsh
 info "Change shell to zsh"
