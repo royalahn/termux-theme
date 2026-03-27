@@ -32,7 +32,7 @@ termux-setup-storage
 # Install used programs
 info "Install used programs"
 
-log "apt install -y git zsh vim screenfetch neofetch openssh sshpass htop wget netcat-openbsd android-tools"
+log "apt install -y git zsh vim screenfetch neofetch fastfetch openssh sshpass htop wget netcat-openbsd android-tools"
 apt update
 apt install -y git zsh vim screenfetch neofetch openssh sshpass htop wget netcat-openbsd android-tools
 
