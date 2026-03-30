@@ -74,6 +74,7 @@ log "Changing font to: ${selected}"
 
 # Copy selected font as font.ttf
 cd "$SCRIPT_DIR" || error "Failed to change directory!"
+rm -f font.ttf
 cp "$selected" font.ttf
 
 echo ""
