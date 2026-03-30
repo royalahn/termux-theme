@@ -70,13 +70,11 @@ fi
 # Get selected font
 selected="${fonts[$((choice-1))]}"
 
-log "Swapping: font.ttf <-> ${selected}"
+log "Changing font to: ${selected}"
 
-# Swap font.ttf with selected font
+# Copy selected font as font.ttf
 cd "$SCRIPT_DIR" || error "Failed to change directory!"
-mv font.ttf "__temp_font__.ttf"
-mv "$selected" font.ttf
-mv "__temp_font__.ttf" "$selected"
+cp "$selected" font.ttf
 
 echo ""
 info "Font changed to: ${selected}"
