@@ -17,12 +17,69 @@ warning () { echo -e "${YELLOW}${*}${NC}";:; }
 info    () { echo -e "${GREEN}-----";echo -e "# ${*}";echo -e "-----${NC}";:; }
 log     () { echo -e "${BLUE}${*}${NC}";:; }
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 info "Change Font"
 
-mv font.ttf temp.ttf
-mv alternative.ttf font.ttf
-mv temp.ttf alternative.ttf
+# Collect all .ttf files except font.ttf (current active font)
+fonts=()
+while IFS= read -r f; do
+    fonts+=("$f")
+done < <(find "$SCRIPT_DIR" -maxdepth 1 -name "*.ttf" ! -name "font.ttf" -printf "%f\n" | sort)
 
+# Check if there are alternative fonts available
+if [ ${#fonts[@]} -eq 0 ]; then
+    error "No alternative font files found!"
+fi
+
+# Display the list of available fonts
+echo ""
+log "Current font: font.ttf"
+echo ""
+log "Available fonts:"
+echo ""
+
+for i in "${!fonts[@]}"; do
+    echo -e "  ${CYAN}[$((i+1))]${NC} ${fonts[$i]}"
+done
+
+echo ""
+echo -e "  ${CYAN}[0]${NC} Cancel"
+echo ""
+
+# Prompt user to select a font
+echo -ne "${PURPLE}Select a font number: ${NC}"
+read -r choice
+
+# Validate input
+if [[ -z "$choice" ]] || ! [[ "$choice" =~ ^[0-9]+$ ]]; then
+    error "Invalid input!"
+fi
+
+# Cancel
+if [ "$choice" -eq 0 ]; then
+    warning "Cancelled."
+    exit 0
+fi
+
+# Range check
+if [ "$choice" -lt 1 ] || [ "$choice" -gt ${#fonts[@]} ]; then
+    error "Invalid selection! Please choose between 1 and ${#fonts[@]}."
+fi
+
+# Get selected font
+selected="${fonts[$((choice-1))]}"
+
+log "Swapping: font.ttf <-> ${selected}"
+
+# Swap font.ttf with selected font
+cd "$SCRIPT_DIR" || error "Failed to change directory!"
+mv font.ttf "__temp_font__.ttf"
+mv "$selected" font.ttf
+mv "__temp_font__.ttf" "$selected"
+
+echo ""
+info "Font changed to: ${selected}"
 warning "Please Restart Termux!"
 
 exit
