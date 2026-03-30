@@ -101,11 +101,12 @@ info "Copy vim config"
 log "cp .vimrc '$HOME'"
 cp .vimrc "$HOME"
 
-# Set sshpass
+# Set alias
 info "Set alias"
 
 echo "export SSHPASS=password" >> ~/.zshrc
 echo "alias ssh1=\"sshpass -e ssh -o StrictHostKeyChecking=no user@localhost\"" >> ~/.zshrc
+echo "alias change-font=\"bash ~/.termux/change-font.sh\"" >> ~/.zshrc
 
 # Done
 warning "Please Restart Termux!"
