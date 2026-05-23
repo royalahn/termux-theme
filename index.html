@@ -5,166 +5,460 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Termux Theme & Utilities Installer</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        gray: {
+                            900: '#0f1115',
+                            800: '#161b22',
+                            700: '#21262d',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        // 초기 테마 설정 (기본값 Light)
+        if (localStorage.theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+            updateThemeIcon();
+        }
+        
+        function updateThemeIcon() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            if (sunIcon && moonIcon) {
+                sunIcon.style.display = isDark ? 'block' : 'none';
+                moonIcon.style.display = isDark ? 'none' : 'block';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', updateThemeIcon);
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc; /* slate-50 */
-            color: #334155; /* slate-700 */
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .glass-header {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #0ea5e9, #6366f1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .feature-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
         }
+        .dark .glass-header {
+            background: rgba(15, 17, 21, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #0ea5e9, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 4s linear infinite;
+        }
+        .dark .gradient-text {
+            background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
         .feature-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
-            border-color: #bae6fd; /* sky-200 */
+            transform: translateY(-5px);
+        }
+        .light-card-hover:hover {
+            box-shadow: 0 20px 25px -5px rgba(14, 165, 233, 0.1), 0 10px 10px -5px rgba(14, 165, 233, 0.04);
+            border-color: #7dd3fc;
+        }
+        .dark .dark-card-hover:hover {
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.1);
+            border-color: #38bdf8;
+        }
+        .glow-bg {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+            top: -300px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+        .dark .glow-bg {
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(15, 17, 21, 0) 70%);
+        }
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Terminal window styles */
+        .terminal-window {
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .dark .terminal-window {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid #21262d;
+        }
+        .terminal-header {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #e2e8f0;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        .dark .terminal-header {
+            background: #0f1115;
+            border-bottom: 1px solid #21262d;
+        }
+        .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+        .code-block { font-family: 'Fira Code', monospace; }
+        
+        .faq-item {
+            transition: all 0.3s ease;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-sky-200 selection:text-sky-900">
+<body class="bg-slate-50 dark:bg-[#0f1115] text-slate-900 dark:text-e2e8f0 min-h-screen flex flex-col selection:bg-sky-200 selection:text-sky-900 dark:selection:bg-sky-500/30 dark:selection:text-sky-200">
+
+    <div class="glow-bg"></div>
 
     <!-- Header Section -->
-    <header class="glass-header sticky top-0 z-50 py-6 px-8 sm:px-12 lg:px-24">
-        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h1 class="text-3xl font-bold tracking-tight text-slate-800">
-                    Termux <span class="gradient-text">Theme</span>
+    <header class="glass-header sticky top-0 z-50 py-4 px-6 sm:px-12 lg:px-24">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-white shadow-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 9l3 3-3 3m5 0h3M4 6h16v12H4z"></path></svg>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                    Termux <span class="gradient-text">Setup</span>
                 </h1>
             </div>
-            <nav>
-                <ul class="flex space-x-6 text-sm font-medium text-slate-500">
-                    <li><a href="#overview" class="hover:text-sky-600 transition-colors">개요</a></li>
-                    <li><a href="#features" class="hover:text-sky-600 transition-colors">주요 기능</a></li>
-                    <li><a href="#install" class="hover:text-sky-600 transition-colors">설치 방법</a></li>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-8 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                    <li><a href="#overview" class="hover:text-sky-500 dark:hover:text-white transition-colors">홈</a></li>
+                    <li><a href="#why" class="hover:text-sky-500 dark:hover:text-white transition-colors">특징</a></li>
+                    <li><a href="#features" class="hover:text-sky-500 dark:hover:text-white transition-colors">기능 안내</a></li>
+                    <li><a href="#install" class="hover:text-sky-500 dark:hover:text-white transition-colors">설치</a></li>
                 </ul>
             </nav>
+            <div class="flex items-center gap-4">
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleTheme()" class="p-2 rounded-full bg-slate-200 dark:bg-gray-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-gray-700 transition-colors" aria-label="Toggle Theme">
+                    <!-- Sun Icon (shows in dark mode) -->
+                    <svg id="sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <!-- Moon Icon (shows in light mode) -->
+                    <svg id="moon-icon" class="w-5 h-5 block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+                
+                <a href="https://github.com/royalahn/termux-theme" target="_blank" class="hidden sm:flex px-5 py-2.5 rounded-full bg-slate-900 dark:bg-white/10 hover:bg-slate-800 dark:hover:bg-white/20 text-white font-medium text-sm transition-all border border-transparent dark:border-white/10 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path></svg>
+                    GitHub
+                </a>
+            </div>
         </div>
     </header>
 
     <!-- Main Section -->
-    <main class="flex-grow py-12 px-8 sm:px-12 lg:px-24 space-y-16">
+    <main class="flex-grow pb-24 px-6 sm:px-12 lg:px-24" id="overview">
         
-        <div class="max-w-5xl mx-auto space-y-16">
+        <div class="max-w-7xl mx-auto">
             
             <!-- Hero Title -->
-            <div class="text-center space-y-6 py-8">
-                <h2 class="text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900">
-                    아름답고 강력한<br>
-                    <span class="gradient-text">터미널 환경</span>의 시작
-                </h2>
-                <p class="text-lg md:text-xl text-slate-500 font-light max-w-2xl mx-auto">
-                    Android의 Termux 환경을 Zsh, Oh My Zsh, 그리고 다양한 유틸리티로 한 번에 세팅해주는 자동화 스크립트입니다.
-                </p>
+            <div class="flex flex-col lg:flex-row items-center justify-between py-20 lg:py-32 gap-16">
+                <div class="lg:w-1/2 space-y-8 reveal active">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-100 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/20 text-sky-600 dark:text-sky-400 text-sm font-semibold mb-2">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+                        </span>
+                        모바일 터미널 환경의 혁신
+                    </div>
+                    <h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
+                        개발자를 위한<br>
+                        <span class="gradient-text">완벽한 Termux</span> 세팅
+                    </h2>
+                    <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 font-medium max-w-xl leading-relaxed">
+                        복잡한 초기 설정을 단 한 번에. Zsh, 플러그인, 필수 유틸리티, 그리고 가장 아름다운 터미널 테마를 경험하세요.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-6">
+                        <a href="#install" class="px-8 py-4 rounded-xl bg-sky-500 hover:bg-sky-600 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-bold shadow-lg shadow-sky-500/30 transition-all flex items-center gap-2">
+                            시작하기
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                        </a>
+                        <a href="#features" class="px-8 py-4 rounded-xl bg-white dark:bg-gray-800 hover:bg-slate-50 dark:hover:bg-gray-700 text-slate-800 dark:text-white font-semibold border border-slate-200 dark:border-gray-700 shadow-sm transition-all">
+                            기능 살펴보기
+                        </a>
+                    </div>
+                </div>
+
+                <div class="lg:w-1/2 w-full reveal active" style="transition-delay: 200ms;">
+                    <div class="terminal-window animate-float bg-[#f8fafc] dark:bg-[#161b22]">
+                        <div class="terminal-header">
+                            <div class="terminal-dot dot-red"></div>
+                            <div class="terminal-dot dot-yellow"></div>
+                            <div class="terminal-dot dot-green"></div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400 ml-4 font-mono font-medium">bash - ~</div>
+                        </div>
+                        <div class="p-6 code-block text-sm space-y-3 h-72 overflow-hidden relative">
+                            <!-- Code content adjusts for dark/light natively via Tailwind classes -->
+                            <div class="flex">
+                                <span class="text-emerald-500 dark:text-emerald-400 mr-2">~</span>
+                                <span class="text-pink-500 dark:text-pink-400 mr-2">❯</span>
+                                <span class="text-slate-800 dark:text-white typing-effect border-r-2 border-slate-800 dark:border-white pr-1"></span>
+                            </div>
+                            <div class="opacity-0 animate-[fadeInUp_0.1s_2.5s_forwards] text-slate-500 dark:text-slate-400">Cloning into 'termux-theme'...</div>
+                            <div class="flex opacity-0 animate-[fadeInUp_0.1s_3s_forwards]">
+                                <span class="text-emerald-500 dark:text-emerald-400 mr-2">~</span>
+                                <span class="text-pink-500 dark:text-pink-400 mr-2">❯</span>
+                                <span class="text-slate-800 dark:text-white">cd termux-theme && ./install.sh</span>
+                            </div>
+                            <div class="opacity-0 animate-[fadeInUp_0.1s_3.5s_forwards] text-sky-600 dark:text-sky-400 font-bold">[*] Starting Termux Setup...</div>
+                            <div class="opacity-0 animate-[fadeInUp_0.1s_4s_forwards] text-slate-600 dark:text-slate-400">[+] Installing Zsh and Oh My Zsh...</div>
+                            <div class="opacity-0 animate-[fadeInUp_0.1s_4.5s_forwards] text-slate-600 dark:text-slate-400">[+] Applying Agnoster Theme...</div>
+                            <div class="opacity-0 animate-[fadeInUp_0.1s_5s_forwards] text-slate-600 dark:text-slate-400">[+] Installing essential utilities (git, vim, htop)...</div>
+                            <div class="opacity-0 animate-[fadeInUp_0.1s_5.5s_forwards] text-emerald-600 dark:text-emerald-400 font-bold">✔ Setup completed successfully!</div>
+                            
+                            <!-- Absolute gradient fade at bottom -->
+                            <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#f8fafc] dark:from-[#161b22] to-transparent"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Intro Section -->
-            <section id="overview" class="bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-slate-200">
-                <div class="flex items-center space-x-4 mb-6">
-                    <div class="w-12 h-12 rounded-full bg-sky-50 flex items-center justify-center border border-sky-100 text-sky-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-slate-800">프로젝트 개요</h3>
+            <!-- Why Section -->
+            <section id="why" class="py-20 border-t border-slate-200 dark:border-gray-800">
+                <div class="text-center space-y-4 reveal mb-16">
+                    <h3 class="text-sky-500 dark:text-sky-400 font-bold tracking-wider uppercase text-sm">Why Termux Theme?</h3>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">왜 사용해야 할까요?</h2>
+                    <p class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg">Termux 앱을 설치한 직후의 밋밋한 화면을 마주하셨나요? 스크립트 하나로 모든 것이 바뀝니다.</p>
                 </div>
-                <p class="text-slate-600 leading-relaxed text-lg">
-                    이 프로젝트는 모바일 터미널 에뮬레이터인 <strong>Termux</strong>의 초기 설정의 번거로움을 덜어줍니다. 단 몇 줄의 명령어로 Zsh, Oh My Zsh, Powerline 폰트 및 개발에 필수적인 유틸리티들을 한 번에 설치하고 최적화된 상태로 설정합니다.
-                </p>
+                
+                <div class="grid md:grid-cols-3 gap-10">
+                    <div class="text-center space-y-4 reveal delay-100">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-500 dark:text-indigo-400">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 dark:text-white">시간 절약</h4>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">복잡한 설정 파일(`~/.zshrc`, `~/.vimrc`)을 일일이 수정하고 폰트를 찾을 필요 없이 한 번에 자동 구성됩니다.</p>
+                    </div>
+                    <div class="text-center space-y-4 reveal delay-200">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-500 dark:text-emerald-400">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 dark:text-white">검증된 안정성</h4>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">수많은 개발자들이 선호하는 설정(Oh My Zsh, Agnoster)과 오류 없는 호환성을 제공하도록 스크립트가 설계되었습니다.</p>
+                    </div>
+                    <div class="text-center space-y-4 reveal delay-300">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-rose-500 dark:text-rose-400">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 dark:text-white">최고의 생산성</h4>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">타이핑을 줄여주는 자동완성(Auto-suggestions)과 하이라이팅을 통해 모바일에서도 PC 못지않은 효율성을 냅니다.</p>
+                    </div>
+                </div>
             </section>
 
             <!-- Features Grid -->
-            <section id="features" class="space-y-8">
-                <h3 class="text-2xl font-bold text-slate-800 text-center">주요 기능</h3>
-                <div class="grid md:grid-cols-2 gap-8">
+            <section id="features" class="py-20 border-t border-slate-200 dark:border-gray-800">
+                <div class="text-center space-y-4 reveal mb-16">
+                    <h3 class="text-sky-500 dark:text-sky-400 font-bold tracking-wider uppercase text-sm">Comprehensive Toolkit</h3>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">모든 것을 담았습니다</h2>
+                    <p class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg">기본 쉘부터 플러그인, 필수 패키지까지. 당신의 터미널이 강력해집니다.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     
                     <!-- Feature 1 -->
-                    <div class="feature-card rounded-2xl p-8">
-                        <h4 class="text-xl font-bold mb-4 text-sky-600 flex items-center gap-3">
-                            <span class="text-2xl">🎨</span> 쉘 및 테마
-                        </h4>
-                        <ul class="space-y-3 text-slate-600 text-sm">
-                            <li class="flex items-start"><span class="mr-2 text-sky-400">●</span> 기본 쉘을 Zsh로 변경 및 Oh My Zsh 설치</li>
-                            <li class="flex items-start"><span class="mr-2 text-sky-400">●</span> 가독성 높은 Agnoster 테마 적용</li>
-                            <li class="flex items-start"><span class="mr-2 text-sky-400">●</span> 깨짐 없는 Powerline 폰트 자동 설정</li>
-                            <li class="flex items-start"><span class="mr-2 text-sky-400">●</span> 눈이 편안한 Snazzy 컬러 스킴 적용</li>
-                        </ul>
+                    <div class="feature-card light-card-hover dark-card-hover bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#21262d] rounded-2xl p-8 reveal">
+                        <div class="w-12 h-12 rounded-xl bg-sky-100 dark:bg-sky-500/10 border border-transparent dark:border-sky-500/20 flex items-center justify-center text-sky-600 dark:text-sky-400 mb-6">
+                            <span class="text-2xl">🎨</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">세련된 터미널 디자인</h4>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
+                            가독성 높은 <strong>Agnoster 테마</strong>, 깨짐 없는 <strong>Powerline 폰트</strong> 적용. 눈이 편안한 <strong>Snazzy 컬러 스킴</strong>으로 터미널을 아름답게 바꿉니다.
+                        </p>
                     </div>
 
                     <!-- Feature 2 -->
-                    <div class="feature-card rounded-2xl p-8">
-                        <h4 class="text-xl font-bold mb-4 text-indigo-600 flex items-center gap-3">
-                            <span class="text-2xl">⚡</span> 강력한 플러그인
-                        </h4>
-                        <ul class="space-y-3 text-slate-600 text-sm">
-                            <li class="flex items-start"><span class="mr-2 text-indigo-400">●</span> <b class="text-slate-800 font-semibold mr-1">zsh-autosuggestions:</b> 실시간 명령어 자동 완성</li>
-                            <li class="flex items-start"><span class="mr-2 text-indigo-400">●</span> <b class="text-slate-800 font-semibold mr-1">zsh-syntax-highlighting:</b> 명령어 구문 강조</li>
-                            <li class="flex items-start"><span class="mr-2 text-indigo-400">●</span> <b class="text-slate-800 font-semibold mr-1">fzf:</b> 강력한 파일 퍼지 파인더(Fuzzy Finder)</li>
-                        </ul>
+                    <div class="feature-card light-card-hover dark-card-hover bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#21262d] rounded-2xl p-8 reveal delay-100">
+                        <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-500/10 border border-transparent dark:border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 mb-6">
+                            <span class="text-2xl">⚡</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">강력한 플러그인</h4>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
+                            <strong>zsh-autosuggestions</strong>(명령어 추천)과 <strong>syntax-highlighting</strong>(구문 강조)으로 입력 오류를 줄이고 작업 속도를 극대화합니다.
+                        </p>
                     </div>
 
                     <!-- Feature 3 -->
-                    <div class="feature-card rounded-2xl p-8">
-                        <h4 class="text-xl font-bold mb-4 text-emerald-600 flex items-center gap-3">
-                            <span class="text-2xl">🛠️</span> 필수 유틸리티
-                        </h4>
-                        <ul class="space-y-3 text-slate-600 text-sm">
-                            <li class="flex items-start"><span class="mr-2 text-emerald-400">●</span> git, vim 등 필수 개발 도구</li>
-                            <li class="flex items-start"><span class="mr-2 text-emerald-400">●</span> htop (시스템 모니터링), wget 등 네트워크 툴</li>
-                            <li class="flex items-start"><span class="mr-2 text-emerald-400">●</span> openssh, sshpass 및 kubectl</li>
-                            <li class="flex items-start"><span class="mr-2 text-emerald-400">●</span> screenfetch, neofetch (시스템 정보)</li>
-                        </ul>
+                    <div class="feature-card light-card-hover dark-card-hover bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#21262d] rounded-2xl p-8 reveal delay-200">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-500/10 border border-transparent dark:border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-6">
+                            <span class="text-2xl">🛠️</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">필수 유틸리티 일괄 설치</h4>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
+                            <strong>git, vim, htop, wget, curl</strong> 등 개발 및 서버 관리에 반드시 필요한 패키지를 자동으로 설치합니다.
+                        </p>
                     </div>
 
                     <!-- Feature 4 -->
-                    <div class="feature-card rounded-2xl p-8">
-                        <h4 class="text-xl font-bold mb-4 text-purple-600 flex items-center gap-3">
-                            <span class="text-2xl">⚙️</span> 최적화된 설정
-                        </h4>
-                        <ul class="space-y-3 text-slate-600 text-sm">
-                            <li class="flex items-start"><span class="mr-2 text-purple-400">●</span> <b class="text-slate-800 font-semibold mr-1">Vim (.vimrc):</b> 구문 강조, 자동 들여쓰기, 줄 번호 등 설정</li>
-                            <li class="flex items-start"><span class="mr-2 text-purple-400">●</span> <b class="text-slate-800 font-semibold mr-1">Git (.gitconfig):</b> 기본 Git 환경 구성</li>
-                            <li class="flex items-start"><span class="mr-2 text-purple-400">●</span> <b class="text-slate-800 font-semibold mr-1">SSH Alias:</b> 로컬 호스트 빠른 접속을 위한 ssh1 alias</li>
-                        </ul>
+                    <div class="feature-card light-card-hover dark-card-hover bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#21262d] rounded-2xl p-8 reveal">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-500/10 border border-transparent dark:border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400 mb-6">
+                            <span class="text-2xl">⚙️</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">개발 환경 완벽 구성</h4>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
+                            최적화된 <strong>.vimrc</strong>(구문강조, 라인넘버) 및 <strong>.gitconfig</strong> 기본 설정을 통해 복잡한 세팅을 생략할 수 있습니다.
+                        </p>
+                    </div>
+
+                    <!-- Feature 5 -->
+                    <div class="feature-card light-card-hover dark-card-hover bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#21262d] rounded-2xl p-8 reveal delay-100">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-500/10 border border-transparent dark:border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-6">
+                            <span class="text-2xl">🚀</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">서버 접속 최적화</h4>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
+                            <strong>openssh, sshpass</strong>가 기본 설치되며, 빠른 로컬 접속을 위한 ssh1 alias 등 유용한 네트워크 도구를 포함합니다.
+                        </p>
+                    </div>
+
+                    <!-- Feature 6 -->
+                    <div class="feature-card light-card-hover dark-card-hover bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#21262d] rounded-2xl p-8 reveal delay-200">
+                        <div class="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-500/10 border border-transparent dark:border-rose-500/20 flex items-center justify-center text-rose-600 dark:text-rose-400 mb-6">
+                            <span class="text-2xl">💻</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">시스템 인포 도구</h4>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
+                            터미널 감성을 더해주는 <strong>neofetch</strong>와 <strong>screenfetch</strong>를 포함하여 기기의 상태를 멋지게 확인할 수 있습니다.
+                        </p>
                     </div>
 
                 </div>
             </section>
 
             <!-- Install Section -->
-            <section id="install" class="bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-slate-200 border-t-4 border-t-sky-500 mt-12">
-                <h3 class="text-2xl font-bold text-slate-800 mb-6">설치 방법</h3>
-                <div class="bg-slate-800 rounded-xl p-5 overflow-x-auto shadow-inner">
-                    <pre><code class="text-sm text-sky-300 font-mono leading-relaxed"><span class="text-slate-500"># 저장소 클론</span>
-git clone https://github.com/royalahn/termux-theme.git
+            <section id="install" class="py-24 border-t border-slate-200 dark:border-gray-800 reveal">
+                <div class="bg-white dark:bg-gray-800/50 border border-slate-200 dark:border-gray-700/50 rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-xl">
+                    <!-- Decor element -->
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-sky-200/50 dark:bg-sky-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                    
+                    <div class="relative z-10 flex flex-col lg:flex-row gap-12 items-center">
+                        <div class="lg:w-1/3 space-y-5">
+                            <div class="inline-block px-3 py-1 rounded-md bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-300 text-sm font-bold tracking-wider">INSTALLATION</div>
+                            <h3 class="text-3xl font-extrabold text-slate-900 dark:text-white">단 한 번의 복사로<br>설치 끝.</h3>
+                            <p class="text-slate-600 dark:text-slate-400 font-medium">우측(또는 아래)의 코드를 Termux 터미널에 복사하여 붙여넣고 실행하세요.</p>
+                            
+                            <div class="p-5 bg-amber-50 dark:bg-amber-500/10 rounded-xl border border-amber-200 dark:border-amber-500/20 text-amber-800 dark:text-amber-200/90 text-sm flex gap-4 mt-8 shadow-sm">
+                                <span class="text-xl leading-none mt-0.5">⚠️</span>
+                                <div class="space-y-1">
+                                    <p class="font-bold">주의사항</p>
+                                    <p>설치 중 저장소 접근 권한 팝업이 뜨면 반드시 <b>허용</b>을 눌러주세요. 설치가 완료된 후 테마 적용을 위해 <strong>Termux 앱을 완전히 껐다가 다시 실행</strong>해야 합니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="lg:w-2/3 w-full">
+                            <div class="bg-slate-900 dark:bg-[#0d1117] rounded-2xl border border-slate-700 dark:border-gray-700 overflow-hidden shadow-2xl">
+                                <div class="bg-slate-800/80 px-5 py-3.5 flex justify-between items-center border-b border-slate-700">
+                                    <span class="text-sm text-slate-300 font-mono font-medium">terminal</span>
+                                    <button class="flex items-center gap-2 text-slate-400 hover:text-white bg-slate-700/50 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors text-sm font-medium" onclick="copyCode()" title="Copy to clipboard">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                        Copy
+                                    </button>
+                                </div>
+                                <div class="p-6 overflow-x-auto">
+                                    <pre id="codeBlock" class="code-block text-sm md:text-base leading-relaxed"><code class="text-slate-300 dark:text-gray-300"><span class="text-slate-500 dark:text-gray-500"># 저장소 클론</span>
+<span class="text-sky-400">git clone</span> https://github.com/royalahn/termux-theme.git
 
-<span class="text-slate-500"># 디렉토리 이동</span>
-cd termux-theme
+<span class="text-slate-500 dark:text-gray-500"># 디렉토리 이동</span>
+<span class="text-sky-400">cd</span> termux-theme
 
-<span class="text-slate-500"># 실행 권한 부여</span>
-chmod +x install.sh
-
-<span class="text-slate-500"># 설치 스크립트 실행</span>
-./install.sh</code></pre>
+<span class="text-slate-500 dark:text-gray-500"># 실행 권한 부여 및 실행</span>
+<span class="text-sky-400">chmod</span> +x install.sh && <span class="text-sky-400">./install.sh</span></code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200 flex gap-3 text-amber-800 text-sm">
-                    <span class="text-lg leading-none">⚠️</span>
-                    <p>
-                        설치 중 Termux가 저장소 접근 권한을 요청할 수 있습니다. 팝업이 뜨면 <b>허용</b>을 눌러주세요.<br>
-                        설치 완료 후 폰트와 테마가 제대로 적용되려면 <strong>Termux 앱을 완전히 껐다가 다시 실행</strong>해야 합니다.
-                    </p>
+            </section>
+
+            <!-- FAQ Section -->
+            <section class="py-20 border-t border-slate-200 dark:border-gray-800 reveal">
+                <div class="max-w-4xl mx-auto">
+                    <h3 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-10 text-center">자주 묻는 질문 (FAQ)</h3>
+                    <div class="space-y-4">
+                        <div class="faq-item bg-white dark:bg-gray-800/40 border border-slate-200 dark:border-gray-700 rounded-xl p-6">
+                            <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Q. 기존 설정(zshrc, vimrc)은 어떻게 되나요?</h4>
+                            <p class="text-slate-600 dark:text-slate-400">새로운 설정으로 덮어씌워집니다. 설치 전 기존 설정 파일이 중요하다면 미리 백업해두시는 것을 권장합니다.</p>
+                        </div>
+                        <div class="faq-item bg-white dark:bg-gray-800/40 border border-slate-200 dark:border-gray-700 rounded-xl p-6">
+                            <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Q. 폰트가 깨져서 나옵니다.</h4>
+                            <p class="text-slate-600 dark:text-slate-400">Powerline 폰트가 정상적으로 로드되지 않은 경우입니다. Termux 앱을 완전히 종료(강제 종료) 후 다시 실행하면 정상적으로 출력됩니다.</p>
+                        </div>
+                        <div class="faq-item bg-white dark:bg-gray-800/40 border border-slate-200 dark:border-gray-700 rounded-xl p-6">
+                            <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Q. 다시 원래대로 돌릴 수 있나요?</h4>
+                            <p class="text-slate-600 dark:text-slate-400">본 스크립트는 기본 쉘을 Zsh로 변경합니다. 다시 bash로 돌아가시려면 터미널에 <code class="bg-slate-100 dark:bg-slate-700 px-1 rounded text-pink-500">chsh -s bash</code> 를 입력하시면 됩니다.</p>
+                        </div>
+                    </div>
                 </div>
             </section>
             
@@ -172,21 +466,63 @@ chmod +x install.sh
     </main>
     
     <!-- Footer Section -->
-    <footer class="bg-white border-t border-slate-200 py-10 mt-auto">
-        <div class="max-w-5xl mx-auto px-8 sm:px-12 lg:px-24 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="text-slate-500 text-sm">
-                &copy; 2026 Termux Theme & Utilities Installer.
+    <footer class="border-t border-slate-200 dark:border-gray-800 py-10 mt-auto bg-white dark:bg-gray-900/50">
+        <div class="max-w-7xl mx-auto px-6 sm:px-12 lg:px-24 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400 text-sm font-medium">
+                <span class="text-xl">⚡</span>
+                <span>&copy; 2026 Termux Setup. Open source project.</span>
             </div>
-            <div class="flex space-x-4">
-                <a href="https://github.com/royalahn/termux-theme" target="_blank" class="text-slate-400 hover:text-slate-700 transition-colors">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path></svg>
-                </a>
-            </div>
-            <div class="text-slate-400 text-xs">
+            <div class="text-slate-400 dark:text-slate-500 text-xs">
                 Generated by AI Coding Assistant
             </div>
         </div>
     </footer>
 
+    <!-- Scripts -->
+    <script>
+        // Typing animation for the hero terminal
+        const typingText = "git clone https://github.com/royalahn/termux-theme.git";
+        const typingElement = document.querySelector('.typing-effect');
+        typingElement.textContent = '';
+        
+        let i = 0;
+        function typeWriter() {
+            if (i < typingText.length) {
+                typingElement.textContent += typingText.charAt(i);
+                i++;
+                setTimeout(typeWriter, 35);
+            } else {
+                setTimeout(() => {
+                    typingElement.classList.remove('border-r-2');
+                }, 500);
+            }
+        }
+        
+        setTimeout(typeWriter, 800);
+
+        // Scroll reveal animation
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        // Trigger once on load
+        setTimeout(reveal, 100);
+
+        // Copy code functionality
+        function copyCode() {
+            const codeText = "git clone https://github.com/royalahn/termux-theme.git\\ncd termux-theme\\nchmod +x install.sh && ./install.sh";
+            navigator.clipboard.writeText(codeText.replace(/\\\\n/g, '\\n')).then(() => {
+                alert('명령어가 클립보드에 복사되었습니다.');
+            });
+        }
+    </script>
 </body>
 </html>
