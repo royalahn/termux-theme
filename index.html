@@ -74,10 +74,13 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        html, body {
+            overflow-x: hidden;
+        }
         body {
             font-family: 'Pretendard', sans-serif;
-            overflow-x: hidden;
             transition: background-color 0.3s ease, color 0.3s ease;
+            word-break: keep-all;
         }
         .glass-header {
             background: rgba(255, 255, 255, 0.7);
@@ -121,7 +124,8 @@
         }
         .glow-bg {
             position: absolute;
-            width: 800px;
+            width: 100%;
+            max-width: 800px;
             height: 800px;
             background: radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
             top: -300px;
@@ -224,7 +228,7 @@
             
             <!-- Hero Title -->
             <div class="flex flex-col lg:flex-row items-center justify-between py-20 lg:py-32 gap-16">
-                <div class="lg:w-1/2 space-y-8 reveal active">
+                <div class="w-full lg:w-1/2 space-y-8 reveal active">
                     <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-100 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/20 text-sky-600 dark:text-sky-400 text-sm font-semibold mb-2">
                         <span class="relative flex h-2 w-2">
                           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
@@ -403,7 +407,7 @@
                     <div class="absolute top-0 right-0 w-64 h-64 bg-sky-200/50 dark:bg-sky-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
                     
                     <div class="relative z-10 flex flex-col lg:flex-row gap-12 items-center">
-                        <div class="lg:w-1/3 space-y-5">
+                        <div class="w-full lg:w-1/3 space-y-5">
                             <div class="inline-block px-3 py-1 rounded-md bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-300 text-sm font-bold tracking-wider">INSTALLATION</div>
                             <h3 class="text-3xl font-extrabold text-slate-900 dark:text-white">단 한 번의 복사로<br>설치 끝.</h3>
                             <p class="text-slate-600 dark:text-slate-400 font-medium">우측(또는 아래)의 코드를 Termux 터미널에 복사하여 붙여넣고 실행하세요.</p>
