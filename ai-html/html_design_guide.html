@@ -208,7 +208,7 @@
                         </div>
                         <div class="p-6 bg-white dark:bg-gray-800 rounded-2xl border border-slate-200 dark:border-gray-700 card-hover">
                             <h4 class="font-bold text-lg mb-2 dark:text-white">Icons</h4>
-                            <p class="text-sm text-slate-600 dark:text-slate-400">외부 라이브러리 없이 순수 SVG로 직접 삽입 (Heroicons 스타일)</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">이모지를 절대 사용하지 말고, Font Awesome 6.5.1 CDN을 포함하여 <code class="bg-slate-100 dark:bg-gray-900 px-1 py-0.5 rounded text-sky-600 dark:text-sky-400">&lt;i class="fa-solid fa-user"&gt;&lt;/i&gt;</code> 처럼 심플한 폰트 아이콘을 사용할 것.</p>
                         </div>
                         <div class="p-6 bg-white dark:bg-gray-800 rounded-2xl border border-slate-200 dark:border-gray-700 card-hover">
                             <h4 class="font-bold text-lg mb-2 dark:text-white">Script</h4>
@@ -262,9 +262,10 @@
                     <p class="text-slate-600 dark:text-slate-400 mb-4">AI가 완벽하게 일관된 스타일을 재현할 수 있도록, 아래의 핵심 CSS와 Tailwind Config 코드를 프롬프트에 함께 제공해주세요.</p>
                     
                     <div class="code-container text-sm leading-relaxed code-block">
-<pre><code class="language-html">&lt;!-- 폰트 설정 (Pretendard & Cascadia Mono) --&gt;
+<pre><code class="language-html">&lt;!-- 폰트 및 아이콘 설정 (Pretendard, Cascadia Mono, Font Awesome) --&gt;
 &lt;link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" /&gt;
 &lt;link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&amp;display=swap" rel="stylesheet"&gt;
+&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"&gt;
 
 &lt;!-- Tailwind Config 애니메이션 및 폰트 설정 예시 --&gt;
 &lt;script&gt;
