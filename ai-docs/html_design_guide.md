@@ -82,7 +82,7 @@ AI가 완벽하게 일관된 스타일을 재현할 수 있도록, 아래의 핵
         background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc);
     }
     .glow-bg {
-        position: absolute; width: 800px; height: 800px; z-index: -1; pointer-events: none;
+        position: absolute; width: 100%; max-width: 800px; height: 800px; z-index: -1; pointer-events: none;
         background: radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
         top: -300px; left: 50%; transform: translateX(-50%); transition: all 0.5s ease;
     }

@@ -7,6 +7,13 @@
     "date": "2026-05-27"
   },
   {
+    "title": "안드레이 카파시의 AI 코딩 규칙 분석",
+    "filename": "andrej_karpathy_rules.html",
+    "description": "Andrej Karpathy가 제안한 AI 코딩 가이드라인 4가지를 분석하고, 이 규칙들이 AI에게 왜 중요한지 초보자의 시각에서 설명합니다.",
+    "category": "분석/인사이트",
+    "date": "2026-05-27"
+  },
+  {
     "title": "프롬프트 엔지니어링 기초",
     "filename": "prompt_engineering.html",
     "description": "AI와의 효과적인 커뮤니케이션을 위한 프롬프트 작성 기법 및 노하우를 정리한 기술 문서입니다.",
