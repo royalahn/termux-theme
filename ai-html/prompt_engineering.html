@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프롬프트 엔지니어링 가이드 | Prompt Engineering Guide</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+    
+    <!-- 폰트 및 아이콘 설정 -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        mono: ['"Cascadia Mono"', 'monospace'],
+                    },
+                    colors: {
+                        gray: { 900: '#0f1115', 800: '#161b22', 700: '#21262d' }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } },
+                        fadeInUp: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Pretendard', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; word-break: keep-all; overflow-x: hidden; }
+        .glass-header { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0, 0, 0, 0.05); transition: all 0.3s ease; }
+        .dark .glass-header { background: rgba(15, 17, 21, 0.7); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .gradient-text { background: linear-gradient(to right, #0ea5e9, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .dark .gradient-text { background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glow-bg { position: absolute; width: 800px; height: 800px; z-index: -1; pointer-events: none; background: radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, rgba(255, 255, 255, 0) 70%); top: -300px; left: 50%; transform: translateX(-50%); transition: all 0.5s ease; }
+        .dark .glow-bg { background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(15, 17, 21, 0) 70%); }
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -6px rgba(0, 0, 0, 0.05); }
+        .dark .card-hover:hover { box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5); border-color: rgba(99, 102, 241, 0.4); }
+        .code-block { font-family: "Cascadia Mono", monospace; }
+        .example-box { border-left: 4px solid #3b82f6; background-color: #f0f9ff; padding: 1rem; border-radius: 0 0.5rem 0.5rem 0; margin-top: 1rem; }
+        .dark .example-box { border-left-color: #38bdf8; background-color: rgba(14, 165, 233, 0.1); }
+        .bad-box { border-left: 4px solid #ef4444; background-color: #fef2f2; padding: 1rem; border-radius: 0 0.5rem 0.5rem 0; margin-top: 1rem; }
+        .dark .bad-box { border-left-color: #f87171; background-color: rgba(239, 68, 68, 0.1); }
+        .good-tag { display: inline-block; padding: 0.2rem 0.5rem; background-color: #10b981; color: white; border-radius: 0.25rem; font-size: 0.75rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .bad-tag { display: inline-block; padding: 0.2rem 0.5rem; background-color: #ef4444; color: white; border-radius: 0.25rem; font-size: 0.75rem; font-weight: bold; margin-bottom: 0.5rem; }
+    </style>
+    <script>
+        if (localStorage.theme === 'dark') {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+            updateThemeIcon();
+        }
+        function updateThemeIcon() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            if (sunIcon && moonIcon) {
+                sunIcon.style.display = isDark ? 'block' : 'none';
+                moonIcon.style.display = isDark ? 'none' : 'block';
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            updateThemeIcon();
+            function reveal() {
+                var reveals = document.querySelectorAll(".reveal");
+                for (var i = 0; i < reveals.length; i++) {
+                    var windowHeight = window.innerHeight;
+                    var elementTop = reveals[i].getBoundingClientRect().top;
+                    var elementVisible = 100;
+                    if (elementTop < windowHeight - elementVisible) {
+                        reveals[i].classList.add("active");
+                    }
+                }
+            }
+            window.addEventListener("scroll", reveal);
+            reveal(); // trigger once
+        });
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-[#0f1115] text-slate-900 dark:text-slate-100 min-h-screen flex flex-col selection:bg-indigo-200 selection:text-indigo-900 dark:selection:bg-indigo-500/30 dark:selection:text-indigo-200">
+
+    <div class="glow-bg"></div>
+
+    <!-- Header -->
+    <header class="glass-header sticky top-0 z-50 py-4 px-6 sm:px-12">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
+                    <i class="fa-solid fa-brain text-xl"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                    Prompt <span class="gradient-text">Engineering</span>
+                </h1>
+            </div>
+            <button onclick="toggleTheme()" class="p-2.5 rounded-full bg-slate-200 dark:bg-gray-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-gray-700 transition-colors shadow-sm">
+                <i id="sun-icon" class="fa-solid fa-sun hidden text-lg"></i>
+                <i id="moon-icon" class="fa-solid fa-moon block text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow pb-24 px-6 sm:px-12 pt-16">
+        <div class="max-w-7xl mx-auto space-y-16">
+            
+            <div class="text-center space-y-6 reveal active max-w-4xl mx-auto">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-700 dark:text-indigo-400 text-sm font-bold shadow-sm">
+                    <i class="fa-solid fa-book-open text-lg"></i> LLM 성능 향상 가이드
+                </div>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.2]">
+                    최고의 AI 결과를 이끌어내는<br>
+                    <span class="gradient-text">18가지 프롬프트 원칙</span>
+                </h2>
+                <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 leading-relaxed mt-6">
+                    Google, OpenAI, Anthropic의 연구 결과와 <strong class="dark:text-white">"Principled Instructions Are All You Need"</strong> 논문에 기반한 가장 효과적이고 실용적인 프롬프트 엔지니어링 기법들을 소개합니다.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <!-- Card 1 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-sky-500/30 dark:hover:shadow-sky-400/20 hover:border-sky-300 dark:hover:border-sky-500/50 transition-all duration-300" style="transition-delay: 0ms">
+                    <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/20 flex items-center justify-center text-sky-500 dark:text-sky-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-user-tie text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#1</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">페르소나 (Persona) 정의</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">AI에게 '누구'의 관점인지 역할을 부여하면 답변의 관점, 판단 기준, 어조를 좁혀 일관성을 크게 높일 수 있습니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">단, 최신 모델(Claude Code 등)에서는 단순한 역할 부여를 넘어 <strong>역할 + 작업 목표 + 현재 컨텍스트 + 완료 기준</strong>을 함께 제시하는 것이 좋습니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">너는 10년 차 프론트엔드 아키텍트다.
+현재 프로젝트를 읽고 index.html의 UI/접근성/반응형 문제를 리뷰하라.
+바로 수정하지 말고 문제 목록과 개선 우선순위를 먼저 제시하라.</pre>
+                    </div>
+                    <div class="bad-box">
+                        <span class="bad-tag"><i class="fa-solid fa-xmark mr-1"></i>BAD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">내가 첨부한 index.html를 프론트엔드 엔지니어처럼 봐줘.
+개선점을 도출해.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 2 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-emerald-500/30 dark:hover:shadow-emerald-400/20 hover:border-emerald-300 dark:hover:border-emerald-500/50 transition-all duration-300" style="transition-delay: 100ms">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center text-emerald-500 dark:text-emerald-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-bullseye text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#2</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">원샷/퓨샷 (One-Shot/Few-Shot)</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">AI에게 추상적인 지시 대신, 원하는 결과물의 패턴과 형식을 직접 '예시'로 보여주어 효율을 극대화합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">Zero-Shot(예시 없음)보다 1~3개의 예시를 주었을 때 업무 형식 일치도와 정확도가 비약적으로 상승합니다. 리뷰 방식이나 출력 형식 등을 구체적인 예시로 보여주세요.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">너는 접근성 리뷰어다.
+출력은 아래 형식으로 고정하라:
+1. 전체 판정
+2. 문제 목록 (심각도, 문제, 근거)
+3. 개선 우선순위
+4. 테스트 기준</pre>
+                    </div>
+                    <div class="bad-box">
+                        <span class="bad-tag"><i class="fa-solid fa-xmark mr-1"></i>BAD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">index.html 좀 봐줘.
+전문가처럼 확인해주고 문제 있으면 알아서 고쳐줘.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 3 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-purple-500/30 dark:hover:shadow-purple-400/20 hover:border-purple-300 dark:hover:border-purple-500/50 transition-all duration-300" style="transition-delay: 200ms">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-500/10 border border-purple-100 dark:border-purple-500/20 flex items-center justify-center text-purple-500 dark:text-purple-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-link text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#3</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">생각의 사슬 (Chain of Thought)</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">답을 바로 요구하지 않고 <strong>'단계별로 생각하라(Let\'s think step by step)'</strong>고 지시하여 논리적 정답률을 높입니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">AI가 스스로 논리적 단계를 밟아가게 유도함으로써 환각(Hallucination) 현상을 줄이고, 복잡한 추론 문제를 효과적으로 해결합니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">이 기획안의 실현 가능성을 다음 단계별로 분석하라:
+1. 예산 측면
+2. 일정 측면
+3. 인력 측면
+으로 나누어 분석한 뒤 종합 결론을 확정하라.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 4 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-rose-500/30 dark:hover:shadow-rose-400/20 hover:border-rose-300 dark:hover:border-rose-500/50 transition-all duration-300" style="transition-delay: 0ms">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 flex items-center justify-center text-rose-500 dark:text-rose-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-users text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#4</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">청중 설정 (Audience Persona)</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">결과물을 읽을 대상(청중)을 명확히 지정하여 AI가 어조와 난이도를 알맞게 자동 조절하도록 합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">전문가, 어린이, 비개발자 등 대상을 지정하면, 출력의 눈높이와 사용하는 어휘의 수준이 정확해집니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">첨부한 내 프로젝트를 개발자가 아닌 비개발자 투자자들에게 쉽고 상세하게 설명하는 자료를 만들어라.
+어려운 언어를 피하고 표와 예시를 포함해라.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 5 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-amber-500/30 dark:hover:shadow-amber-400/20 hover:border-amber-300 dark:hover:border-amber-500/50 transition-all duration-300" style="transition-delay: 100ms">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 flex items-center justify-center text-amber-500 dark:text-amber-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-lightbulb text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#5</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">출력 결과에 예시 포함 요청</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">단순한 설명에 그치지 않고 구체적인 사용 사례(Showcases)나 시나리오를 함께 생성하도록 지시합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">추상적인 개념 설명보다 구체적인 예시를 생성하게 하면 답변의 활용도와 정확도가 동시에 상승합니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">내 프로젝트에 A 기법을 적용하고 싶다. 구상을 단계별로 작성하고, A 기법이 구현되었을 때 유저들의 사용 시나리오를 3가지 예시로 생성하라.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 6 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-indigo-500/30 dark:hover:shadow-indigo-400/20 hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-all duration-300" style="transition-delay: 200ms">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-center text-indigo-500 dark:text-indigo-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-circle-question text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#6</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">역질문 (Reverse Questioning)</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">정보가 부족할 때 AI가 멋대로 추측하게 두지 말고, 사용자에게 직접 질문하여 정보를 보충하도록 지시합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">초기 프롬프트가 모호하거나 누락된 맥락이 있을 때 품질 저하를 막아주는 훌륭한 방어 기제입니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">이 기획안을 보강하고 싶은데, 네가 더 좋은 답변을 내놓기 위해 나한테 더 알아야 할 정보가 있다면 질문 3가지를 먼저 해라.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 7 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-sky-500/30 dark:hover:shadow-sky-400/20 hover:border-sky-300 dark:hover:border-sky-500/50 transition-all duration-300" style="transition-delay: 0ms">
+                    <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/20 flex items-center justify-center text-sky-500 dark:text-sky-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-shield-halved text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#7</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">구체적인 제약 사항 추가</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">AI에게 자유도를 낮추고 적절한 제약을 걸어 더 깊고 실용적인 답변을 유도합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">단어 수, 특정 단어 포함/배제, 엄격한 형식 지정 등 제약을 추가할수록 출력의 품질 관리가 용이해집니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">초등학생 저학년이 이해할 수 있는 쉬운 단어를 활용하여, 반드시 200자 이내로 요약해서 작성하라.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 8 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-emerald-500/30 dark:hover:shadow-emerald-400/20 hover:border-emerald-300 dark:hover:border-emerald-500/50 transition-all duration-300" style="transition-delay: 100ms">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center text-emerald-500 dark:text-emerald-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-table-list text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#8</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">출력물의 구조 먼저 정의</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">작성을 시작하기 전에 뼈대가 되는 구조를 지정해주면 논리적 흐름이 탄탄한 결과물을 얻을 수 있습니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">표 형식, 글머리 기호, 혹은 특정 목차 순서 등을 명시하면 AI가 내용을 빠뜨리지 않고 채워 넣습니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">답변은 반드시 다음 순서로 작성하라:
+1. 개요
+2. 문제점
+3. 해결책
+4. 기대효과</pre>
+                    </div>
+                </article>
+
+                <!-- Card 9 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-purple-500/30 dark:hover:shadow-purple-400/20 hover:border-purple-300 dark:hover:border-purple-500/50 transition-all duration-300" style="transition-delay: 200ms">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-500/10 border border-purple-100 dark:border-purple-500/20 flex items-center justify-center text-purple-500 dark:text-purple-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-bullhorn text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#9</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">반복과 강조</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">긴 프롬프트에서 가장 중요하거나 절대 잊지 말아야 할 명령은 끝부분에 한 번 더 강조합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">AI 모델은 프롬프트의 시작과 끝을 가장 잘 기억하는 경향이 있으므로, 핵심 지시사항을 마지막에 재차 언급하는 것이 좋습니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">(앞선 긴 설명 후 마지막에)
+기억해라: 반드시 박사(PhD) 수준의 깊이 있는 분석이어야 하며, 요약본은 제외해야 한다.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 10 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-rose-500/30 dark:hover:shadow-rose-400/20 hover:border-rose-300 dark:hover:border-rose-500/50 transition-all duration-300" style="transition-delay: 0ms">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 flex items-center justify-center text-rose-500 dark:text-rose-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-code text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#10</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">프롬프트 경계 분리</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">XML 태그나 Markdown 구분자를 사용하여 지시사항, 데이터, 예시 등을 명확히 분리합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">복잡한 프롬프트에서 모델이 어디까지가 룰이고 어디부터가 입력 데이터인지 혼동하는 것을 막아줍니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">&lt;role&gt;너는 접근성 리뷰어다.&lt;/role&gt;
+&lt;context&gt;단일 HTML 파일 품질을 평가한다.&lt;/context&gt;
+&lt;task&gt;UI 문제를 진단하라.&lt;/task&gt;</pre>
+                    </div>
+                </article>
+
+                <!-- Card 11 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-amber-500/30 dark:hover:shadow-amber-400/20 hover:border-amber-300 dark:hover:border-amber-500/50 transition-all duration-300" style="transition-delay: 100ms">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 flex items-center justify-center text-amber-500 dark:text-amber-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-magnifying-glass-chart text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#11</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">근거 기반 답변 강제 (Grounding)</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">모호하고 일반적인 평가가 아닌, 실제 코드나 문서에 존재하는 명확한 데이터를 바탕으로 답변하도록 지시합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">근거 없는 '좋아 보인다' 식의 무의미한 답변을 차단하고, 실질적이고 객관적인 피드백을 이끌어냅니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">모든 판단은 반드시 실제 파일명, 코드 구조, 선택자명 등을 근거로 제시하라.
+근거 없이 '개선 가능하다'와 같은 일반적 표현은 사용하지 마라.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 12 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-indigo-500/30 dark:hover:shadow-indigo-400/20 hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-all duration-300" style="transition-delay: 200ms">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-center text-indigo-500 dark:text-indigo-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-toolbox text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#12</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">도구 사용 규칙 (Tool-use Policy)</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">코딩 에이전트에게 언제 읽고, 언제 코드를 수정하며, 언제 테스트할지 명확한 시점과 권한을 지시합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">AI가 독단적으로 코드를 망가뜨리는 것을 방지하고, 제안과 구현 단계를 사용자의 통제 하에 둡니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">먼저 파일을 읽고 진단하라. 1차 응답에서는 절대 파일을 수정하지 마라.
+내가 '수정 진행'이라고 말한 뒤에만 코드를 수정하라.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 13 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-sky-500/30 dark:hover:shadow-sky-400/20 hover:border-sky-300 dark:hover:border-sky-500/50 transition-all duration-300" style="transition-delay: 0ms">
+                    <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/20 flex items-center justify-center text-sky-500 dark:text-sky-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-layer-group text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#13</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">작업 분해 (Least-to-Most)</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">크고 복잡한 작업을 한 번에 처리하지 말고, 논리적인 하위 단계로 잘게 쪼개어 순차적으로 해결하게 합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">설계, 구현, 검증이 뒤섞여 프로젝트가 엉키는 것을 막고, 각 단계별로 정확성을 확보할 수 있습니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">이 작업을 한 번에 구현하지 마라. 다음 순서로 진행하라:
+1. 구조 파악
+2. 문제 분류
+3. 수정 계획 수립
+4. 승인 후 구현</pre>
+                    </div>
+                </article>
+
+                <!-- Card 14 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-emerald-500/30 dark:hover:shadow-emerald-400/20 hover:border-emerald-300 dark:hover:border-emerald-500/50 transition-all duration-300" style="transition-delay: 100ms">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center text-emerald-500 dark:text-emerald-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-list-check text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#14</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">자가 검증 강제 (Self-Check)</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">AI가 최종 답변을 출력하기 전에, 주어진 체크리스트(루브릭)에 맞춰 스스로 내용을 검증하게 합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">지시사항 누락이나 논리적 오류를 AI 스스로 한 번 더 점검하여 걸러내는 훌륭한 디버깅 기법입니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">최종 답변 전에 다음 기준으로 스스로 검증하라:
+- 실제 파일을 근거로 했는가?
+- 수정 금지 지시를 지켰는가?
+누락되었다면 보완 후 답변하라.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 15 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-purple-500/30 dark:hover:shadow-purple-400/20 hover:border-purple-300 dark:hover:border-purple-500/50 transition-all duration-300" style="transition-delay: 200ms">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-500/10 border border-purple-100 dark:border-purple-500/20 flex items-center justify-center text-purple-500 dark:text-purple-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-spinner text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#15</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">상태 및 컨텍스트 관리 지시</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">장기적인 프로젝트를 진행할 때 `progress.md` 등 파일에 현재 작업 상태와 남은 과제를 기록하게 합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">에이전트가 기억을 잃거나 세션이 재시작되더라도, 기록된 상태 파일을 읽고 작업을 매끄럽게 이어나갈 수 있습니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">작업이 길어지면 `progress.md`를 만들어 완료 작업, 남은 작업, 수정한 파일 등을 기록하라.
+새 작업을 시작할 때 항상 이 파일을 먼저 읽어라.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 16 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-rose-500/30 dark:hover:shadow-rose-400/20 hover:border-rose-300 dark:hover:border-rose-500/50 transition-all duration-300" style="transition-delay: 0ms">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 flex items-center justify-center text-rose-500 dark:text-rose-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-ban text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#16</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">하드코딩 방지 (General Solution)</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">AI가 특정 테스트 케이스만 꼼수로 통과하기 위해 하드코딩(임시방편)하는 것을 강력히 금지합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">다양한 상황과 유효한 입력 모두를 커버할 수 있는 근본적이고 '일반적인' 로직(General Solution)을 작성하도록 유도합니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">테스트를 통과시키기 위한 꼼수나 하드코딩을 절대 하지 마라.
+모든 유효한 입력 상황에서 동작하는 구조적이고 일반적인 해결책을 구현하라.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 17 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-amber-500/30 dark:hover:shadow-amber-400/20 hover:border-amber-300 dark:hover:border-amber-500/50 transition-all duration-300" style="transition-delay: 100ms">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 flex items-center justify-center text-amber-500 dark:text-amber-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-code-compare text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#17</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">다중 후보 생성 후 선택</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">중요한 설계 판단 시, 처음부터 하나의 답을 내지 단지 않고 여러 대안을 먼저 제시한 뒤 장단점을 비교하게 합니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">최소 수정안, 디자인 중심안, 성능 중심안 등 다각도의 사고(Tree-of-Thoughts)를 거쳐 최적의 선택을 하도록 돕습니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">바로 하나를 확정하지 마라. 개선 방향을 3가지 후보(A/B/C안)로 제시하고,
+각 안의 장단점을 비교 분석한 뒤 가장 적합한 것을 추천하라.</pre>
+                    </div>
+                </article>
+
+                <!-- Card 18 -->
+                <article class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 card-hover reveal group hover:shadow-2xl hover:shadow-indigo-500/30 dark:hover:shadow-indigo-400/20 hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-all duration-300" style="transition-delay: 200ms">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-center text-indigo-500 dark:text-indigo-400 mb-6 shadow-sm">
+                        <i class="fa-solid fa-life-ring text-2xl"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-slate-400 font-mono text-xs font-bold border border-slate-200 dark:border-gray-700">#18</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">불확실성 및 Fallback 명시</h3>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium mb-3 leading-relaxed">작업 중 정보가 부족하거나 오류를 만났을 때, AI가 멋대로 추측하지 않고 어떻게 대응할지 행동 지침을 정해줍니다.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">확인 불가함을 명시하거나 사용자에게 권한을 넘기는 등 예측 가능한 안전망(Fallback Policy)을 구축합니다.</p>
+                    
+                    <div class="example-box">
+                        <span class="good-tag"><i class="fa-solid fa-check mr-1"></i>GOOD</span>
+                        <pre class="code-block text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">정보가 부족하면 절대 추측하지 마라.
+확인 불가능한 내용은 '확인 불가'로 명시하고, 판단 정보가 부족하면 즉시 질문하라.</pre>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-200 dark:border-gray-800 py-10 mt-auto bg-white dark:bg-[#0f1115]">
+        <div class="max-w-7xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center gap-4">
+            <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400 text-sm font-medium">
+                <i class="fa-solid fa-brain text-indigo-500 text-lg"></i>
+                <span>Prompt Engineering Guide</span>
+            </div>
+            <div class="text-slate-400 dark:text-slate-500 text-xs">
+                Based on Anthropic & OpenAI Guidelines
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
