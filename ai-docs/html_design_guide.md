@@ -50,7 +50,7 @@ AI가 완벽하게 일관된 스타일을 재현할 수 있도록, 아래의 핵
             extend: {
                 fontFamily: {
                     sans: ['Pretendard', 'sans-serif'],
-                    mono: ['"Cascadia Mono"', 'monospace'],
+                    mono: ['"Cascadia Mono"', 'Pretendard', 'monospace'],
                 },
                 colors: { gray: { 900: '#0f1115', 800: '#161b22', 700: '#21262d' } },
                 animation: {
