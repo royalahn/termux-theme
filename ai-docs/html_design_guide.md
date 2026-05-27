@@ -8,7 +8,7 @@
 
 ### 1. 기술 스택 (Tech Stack)
 *   **CSS Framework:** Tailwind CSS (CDN 방식 사용, `<script src="https://cdn.tailwindcss.com"></script>`)
-*   **Fonts:** 본문용 한글 폰트 `Pretendard` (CDN), 코드용 `Fira Code` (Google Fonts)
+*   **Fonts:** 본문용 메인 폰트 `Pretendard` (CDN), 고정폭(Code, Pre 등) 폰트 `Cascadia Mono` (Google Fonts)
 *   **Icons:** 외부 라이브러리 없이 순수 SVG로 직접 삽입 (Heroicons 스타일)
 *   **Script:** Vanilla Javascript (스크롤 애니메이션 및 테마 토글, 클릭 이벤트 등)
 
@@ -37,12 +37,20 @@
 AI가 완벽하게 일관된 스타일을 재현할 수 있도록, 아래의 핵심 CSS와 Tailwind Config 코드를 프롬프트에 함께 제공해주세요.
 
 ```html
-<!-- Tailwind Config 애니메이션 설정 예시 -->
+<!-- 폰트 설정 (Pretendard & Cascadia Mono) -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap" rel="stylesheet">
+
+<!-- Tailwind Config 애니메이션 및 폰트 설정 예시 -->
 <script>
     tailwind.config = {
         darkMode: 'class',
         theme: {
             extend: {
+                fontFamily: {
+                    sans: ['Pretendard', 'sans-serif'],
+                    mono: ['"Cascadia Mono"', 'monospace'],
+                },
                 colors: { gray: { 900: '#0f1115', 800: '#161b22', 700: '#21262d' } },
                 animation: {
                     'float': 'float 6s ease-in-out infinite',
