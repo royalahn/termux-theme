@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Workflow Analysis - Termux Theme</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        mono: ['"Cascadia Mono"', 'Pretendard', 'monospace'],
+                    },
+                    colors: {
+                        gray: {
+                            900: '#0f1115',
+                            800: '#161b22',
+                            700: '#21262d',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        // 초기 테마 설정 (기본값 Light)
+        if (localStorage.theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+            updateThemeIcon();
+        }
+        
+        function updateThemeIcon() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            if (sunIcon && moonIcon) {
+                sunIcon.style.display = isDark ? 'block' : 'none';
+                moonIcon.style.display = isDark ? 'none' : 'block';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', updateThemeIcon);
+    </script>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        html, body {
+            overflow-x: hidden;
+        }
+        body {
+            font-family: 'Pretendard', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            word-break: keep-all;
+        }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .dark .glass-header {
+            background: rgba(15, 17, 21, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #0ea5e9, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 4s linear infinite;
+        }
+        .dark .gradient-text {
+            background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .light-card-hover:hover {
+            box-shadow: 0 20px 25px -5px rgba(14, 165, 233, 0.1), 0 10px 10px -5px rgba(14, 165, 233, 0.04);
+            border-color: #7dd3fc;
+        }
+        .dark .dark-card-hover:hover {
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.1);
+            border-color: #38bdf8;
+        }
+        .glow-bg {
+            position: absolute;
+            width: 100%;
+            max-width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+            top: -300px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+        .dark .glow-bg {
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(15, 17, 21, 0) 70%);
+        }
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Terminal window styles */
+        .terminal-window {
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .dark .terminal-window {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid #21262d;
+        }
+        .terminal-header {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #e2e8f0;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        .dark .terminal-header {
+            background: #0f1115;
+            border-bottom: 1px solid #21262d;
+        }
+        .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+        pre, code, .code-block { font-family: "Cascadia Mono", "Pretendard", monospace; }
+        
+        .faq-item {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-[#0f1115] text-slate-900 dark:text-e2e8f0 min-h-screen flex flex-col selection:bg-sky-200 selection:text-sky-900 dark:selection:bg-sky-500/30 dark:selection:text-sky-200">
+
+    <div class="glow-bg"></div>
+
+    <!-- Header Section -->
+    <header class="glass-header sticky top-0 z-50 py-4 px-6 sm:px-12 lg:px-24">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-lg">
+                    <i class="fa-solid fa-network-wired text-lg"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                    Agent <span class="gradient-text">Workflow</span>
+                </h1>
+            </div>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-8 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                    <!-- 페이지 이동에 필요한 네비게이션을 여기에 작성하세요 -->
+                </ul>
+            </nav>
+            <div class="flex items-center gap-4">
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleTheme()" class="p-2 rounded-full bg-slate-200 dark:bg-gray-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-gray-700 transition-colors" aria-label="Toggle Theme">
+                    <!-- Sun Icon (shows in dark mode) -->
+                    <svg id="sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <!-- Moon Icon (shows in light mode) -->
+                    <svg id="moon-icon" class="w-5 h-5 block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+                
+                <a href="https://github.com/royalahn/termux-theme" target="_blank" class="hidden sm:flex px-5 py-2.5 rounded-full bg-slate-900 dark:bg-white/10 hover:bg-slate-800 dark:hover:bg-white/20 text-white font-medium text-sm transition-all border border-transparent dark:border-white/10 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path></svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Section -->
+    <main class="flex-grow pb-24 px-6 sm:px-12 lg:px-24 pt-12">
+        <div class="max-w-7xl mx-auto">
+
+            <div class="text-center py-16">
+                <div class="inline-flex items-center justify-center p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl mb-6 text-indigo-600 dark:text-indigo-400">
+                    <i class="fa-solid fa-robot text-3xl"></i>
+                </div>
+                <h2 class="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6">
+                    AI 에이전트 <span class="gradient-text">워크플로우 분석</span>
+                </h2>
+                <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+                    초보자도 한눈에 파악할 수 있는 AI 협업 시스템(MCP, SubAgent, Skills) 구축 가이드
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+
+                <div class="feature-card light-card-hover dark:dark-card-hover bg-white dark:bg-[#161b22] p-8 rounded-2xl border border-slate-200 dark:border-gray-800 reveal flex flex-col">
+                    <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 mb-6">
+                        <i class="fa-solid fa-plug text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">1. MCP (AI 도구 연결)</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4 text-sm leading-relaxed flex-grow">
+                        MCP(Model Context Protocol)는 AI에게 새로운 능력을 부여하는 '플러그인'입니다. AI가 직접 웹을 검색하거나 웹사이트를 조작할 수 있도록 도구를 쥐어줍니다.
+                    </p>
+                    <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400 mb-6">
+
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-purple-500 mt-1"></i>
+                            <div><strong>Context7:</strong> 프로젝트의 전반적인 맥락과 상황을 이해하는 도구입니다.</div>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-purple-500 mt-1"></i>
+                            <div><strong>Firecrawl:</strong> 외부 문서를 검색하고 최신 정보를 읽어오는 도구입니다.</div>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-purple-500 mt-1"></i>
+                            <div><strong>Playwright:</strong> 실제 브라우저를 띄워서 페이지를 테스트하는 도구입니다.</div>
+                        </li>
+                    </ul>
+                    <button onclick="openModal('modal-1')" class="mt-auto flex items-center justify-center gap-2 w-full p-3 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-700 dark:text-slate-300 rounded-xl transition-colors font-medium text-sm border border-slate-200 dark:border-gray-700">
+                        <i class="fa-solid fa-file-code"></i> 원본 Markdown 보기
+                    </button>
+                </div>
+
+                <div class="feature-card light-card-hover dark:dark-card-hover bg-white dark:bg-[#161b22] p-8 rounded-2xl border border-slate-200 dark:border-gray-800 reveal flex flex-col">
+                    <div class="w-12 h-12 rounded-xl bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center text-sky-600 dark:text-sky-400 mb-6">
+                        <i class="fa-solid fa-magnifying-glass text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">2. 서브 에이전트: Researcher</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4 text-sm leading-relaxed flex-grow">
+                        메인 AI를 도와주는 '자료조사 전용 비서'입니다. 코드를 수정하지 않고 오직 정보 수집과 사실 확인만 담당하여 시스템을 안전하게 유지합니다.
+                    </p>
+                    <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400 mb-6">
+
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-arrow-right text-sky-500 mt-1"></i>
+                            <div><strong>Firecrawl MCP</strong> 도구 하나만 사용해서 웹 검색을 전담합니다.</div>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-arrow-right text-sky-500 mt-1"></i>
+                            <div>코드를 실수로 망가뜨릴 위험이 없도록 <strong>읽기 전용(Read-only)</strong> 모드로 동작합니다.</div>
+                        </li>
+                    </ul>
+                    <button onclick="openModal('modal-2')" class="mt-auto flex items-center justify-center gap-2 w-full p-3 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-700 dark:text-slate-300 rounded-xl transition-colors font-medium text-sm border border-slate-200 dark:border-gray-700">
+                        <i class="fa-solid fa-file-code"></i> 원본 Markdown 보기
+                    </button>
+                </div>
+
+                <div class="feature-card light-card-hover dark:dark-card-hover bg-white dark:bg-[#161b22] p-8 rounded-2xl border border-slate-200 dark:border-gray-800 reveal flex flex-col">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-6">
+                        <i class="fa-solid fa-vial-circle-check text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">3. 서브 에이전트: UI Tester</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4 text-sm leading-relaxed flex-grow">
+                        사람 대신 웹사이트에 접속해 클릭해보고 확인하는 'QA(품질보증) 비서'입니다. 만든 코드가 브라우저에서 제대로 작동하는지 검사합니다.
+                    </p>
+                    <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400 mb-6">
+
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-arrow-right text-emerald-500 mt-1"></i>
+                            <div><strong>Playwright MCP</strong>를 사용하여 눈에 보이지 않는 서버를 띄운 뒤 페이지를 로드합니다.</div>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-arrow-right text-emerald-500 mt-1"></i>
+                            <div>버튼 클릭, 모바일 화면 비율 확인, 네트워크 에러 유무 등 사람처럼 꼼꼼하게 점검합니다.</div>
+                        </li>
+                    </ul>
+                    <button onclick="openModal('modal-3')" class="mt-auto flex items-center justify-center gap-2 w-full p-3 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-700 dark:text-slate-300 rounded-xl transition-colors font-medium text-sm border border-slate-200 dark:border-gray-700">
+                        <i class="fa-solid fa-file-code"></i> 원본 Markdown 보기
+                    </button>
+                </div>
+
+                <div class="feature-card light-card-hover dark:dark-card-hover bg-white dark:bg-[#161b22] p-8 rounded-2xl border border-slate-200 dark:border-gray-800 reveal flex flex-col">
+                    <div class="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-rose-600 dark:text-rose-400 mb-6">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">4. 자동화 워크플로우: Skills</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4 text-sm leading-relaxed flex-grow">
+                        '스킬(Skill)'은 AI가 여러 단계를 알아서 척척 처리하게 만든 업무 순서도입니다. 단 한 번의 명령으로 수정부터 테스트, 저장까지 이어집니다.
+                    </p>
+                    <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400 mb-6">
+
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-arrow-right text-rose-500 mt-1"></i>
+                            <div>사용자가 수정할 부분을 알려주면(예: 추천 일정 추가) 딱 그 부분만 수정합니다.</div>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-arrow-right text-rose-500 mt-1"></i>
+                            <div>수정이 끝나면 곧바로 <strong>UI Tester 비서</strong>를 호출하여 결과물이 정상인지 평가받습니다.</div>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-arrow-right text-rose-500 mt-1"></i>
+                            <div>테스트에 성공(PASS)하면 최종적으로 코드를 자동 저장(Commit)합니다.</div>
+                        </li>
+                    </ul>
+                    <button onclick="openModal('modal-4')" class="mt-auto flex items-center justify-center gap-2 w-full p-3 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-700 dark:text-slate-300 rounded-xl transition-colors font-medium text-sm border border-slate-200 dark:border-gray-700">
+                        <i class="fa-solid fa-file-code"></i> 원본 Markdown 보기
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Conclusion Section -->
+            <div class="bg-slate-100 dark:bg-slate-800/50 rounded-3xl p-8 md:p-12 border border-slate-200 dark:border-gray-700 reveal">
+                <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-8 text-center">한눈에 보는 AI 코딩 팀 업무 흐름</h3>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-6 text-center">
+                    <div class="flex-1 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-700">
+                        <div class="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-gray-900 flex items-center justify-center shadow-inner mb-4 text-3xl">🧑‍💻</div>
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 mb-2">1. 사용자 명령</h4>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">"여행 팁 섹션을 수정해줘"</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-600 hidden md:block text-2xl"></i>
+                    <i class="fa-solid fa-chevron-down text-slate-300 dark:text-slate-600 md:hidden text-2xl my-2"></i>
+                    <div class="flex-1 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-700">
+                        <div class="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-gray-900 flex items-center justify-center shadow-inner mb-4 text-3xl">🤖</div>
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 mb-2">2. 스킬 동작</h4>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">메인 AI가 해당 코드만 찾아 안전하게 수정</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-600 hidden md:block text-2xl"></i>
+                    <i class="fa-solid fa-chevron-down text-slate-300 dark:text-slate-600 md:hidden text-2xl my-2"></i>
+                    <div class="flex-1 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-700">
+                        <div class="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-gray-900 flex items-center justify-center shadow-inner mb-4 text-3xl">🕵️‍♂️</div>
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 mb-2">3. UI 검증</h4>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">UI Tester가 실제 브라우저로 접속해 확인</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-600 hidden md:block text-2xl"></i>
+                    <i class="fa-solid fa-chevron-down text-slate-300 dark:text-slate-600 md:hidden text-2xl my-2"></i>
+                    <div class="flex-1 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-700">
+                        <div class="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-gray-900 flex items-center justify-center shadow-inner mb-4 text-3xl">✅</div>
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 mb-2">4. 자동 저장</h4>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">오류가 없다면 자동으로 코드 Commit</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    
+    <!-- Footer Section -->
+    <footer class="border-t border-slate-200 dark:border-gray-800 py-10 mt-auto bg-white dark:bg-gray-900/50">
+        <div class="max-w-7xl mx-auto px-6 sm:px-12 lg:px-24 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400 text-sm font-medium">
+                <i class="fa-solid fa-bolt text-xl"></i>
+                <span>&copy; 2026 Termux Setup. Open source project.</span>
+            </div>
+            <div class="text-slate-400 dark:text-slate-500 text-xs">
+                Generated by AI Coding Assistant
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Scroll reveal animation
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        // Trigger once on load
+        setTimeout(reveal, 100);
+    </script>
+
+    <!-- Modal 1 -->
+    <div id="modal-1" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-300">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('modal-1')"></div>
+        
+        <!-- Modal Content -->
+        <div class="relative w-full max-w-4xl bg-white dark:bg-[#0f1115] rounded-2xl shadow-2xl border border-slate-200 dark:border-gray-800 flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-gray-800">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-code text-indigo-500"></i> 1. MCP 설치.md
+                </h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="copyContent('modal-1-content', this)" class="p-2 px-3 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium">
+                        <i class="fa-regular fa-copy"></i> 복사
+                    </button>
+                    <button onclick="closeModal('modal-1')" class="p-2 px-3 text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-4 overflow-y-auto bg-slate-50 dark:bg-[#161b22] flex-1 rounded-b-2xl text-left">
+                <pre class="text-xs sm:text-sm text-slate-800 dark:text-slate-300 font-mono leading-relaxed whitespace-pre-wrap"><code id="modal-1-content">목표:현재 repo의 `.codex/config.toml`에 project-scoped MCP 3개만 등록하고, 등록 상태만 확인하라.
+
+대상 MCP:
+- Context7: `npx -y @upstash/context7-mcp`
+- Firecrawl: `.codex/mcp/firecrawl.ps1` wrapper 사용
+- Playwright: `npx -y @playwright/mcp@latest`
+
+수정 가능 파일:
+- .codex/config.toml
+- .codex/mcp/firecrawl.ps1
+
+절대 금지:
+- ~/.codex/config.toml 수정 금지
+- global MCP registry 사용 금지
+- .mcp.json 생성/수정 금지
+- API key, token, secret, .env 원문 출력 금지
+- config.toml에 API key 하드코딩 금지
+- Firecrawl scrape 금지
+- Playwright 브라우저 실행 금지
+- 실제 MCP tool 호출 금지
+
+작업:
+1. repo root와 `.codex/config.toml` 존재 여부를 확인한다.
+2. `.codex/mcp/firecrawl.ps1`을 생성/정리한다.
+3. wrapper는 repo root의 `.env`에서 `FIRECRAWL_API_KEY`만 읽어 process env로 설정한다.
+4. wrapper는 `.env` 원문과 key 값을 출력하지 않는다.
+5. key가 없으면 secret 없이 짧은 에러만 출력하고 종료한다.
+6. wrapper의 마지막 실행 명령은 `npx -y firecrawl-mcp`로 둔다.
+7. `.codex/config.toml`의 MCP 블록을 아래 3개로 정리한다.
+
+필수 MCP 블록:
+```toml
+[mcp_servers.context7]
+command = &quot;npx&quot;
+args = [&quot;-y&quot;, &quot;@upstash/context7-mcp&quot;]
+startup_timeout_sec = 20
+required = false
+
+[mcp_servers.firecrawl]
+command = &quot;powershell.exe&quot;
+args = [&quot;-NoProfile&quot;, &quot;-ExecutionPolicy&quot;, &quot;Bypass&quot;, &quot;-File&quot;, &quot;.codex/mcp/firecrawl.ps1&quot;]
+startup_timeout_sec = 20
+required = false
+
+[mcp_servers.playwright]
+command = &quot;npx&quot;
+args = [&quot;-y&quot;, &quot;@playwright/mcp@latest&quot;]
+startup_timeout_sec = 20
+required = false
+```
+
+검증:
+1. `.codex/config.toml`에 Context7, Firecrawl, Playwright MCP 블록만 존재하는지 확인한다.
+2. API key 하드코딩이 없는지 확인한다.
+3. `codex mcp list`를 1회만 실행해 등록 상태를 확인한다.
+4. 실제 MCP tool 호출은 하지 않는다.
+
+최종 보고:
+- `.codex/config.toml`에 저장된 MCP 목록
+- 생성/수정 파일
+- `codex mcp list` 결과 요약
+- 실제 MCP 호출/Firecrawl scrape/Playwright 실행을 하지 않았음
+- secret 출력 없음</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2 -->
+    <div id="modal-2" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-300">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('modal-2')"></div>
+        
+        <!-- Modal Content -->
+        <div class="relative w-full max-w-4xl bg-white dark:bg-[#0f1115] rounded-2xl shadow-2xl border border-slate-200 dark:border-gray-800 flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-gray-800">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-code text-indigo-500"></i> 2. SubAgents 1.md
+                </h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="copyContent('modal-2-content', this)" class="p-2 px-3 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium">
+                        <i class="fa-regular fa-copy"></i> 복사
+                    </button>
+                    <button onclick="closeModal('modal-2')" class="p-2 px-3 text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-4 overflow-y-auto bg-slate-50 dark:bg-[#161b22] flex-1 rounded-b-2xl text-left">
+                <pre class="text-xs sm:text-sm text-slate-800 dark:text-slate-300 font-mono leading-relaxed whitespace-pre-wrap"><code id="modal-2-content">목표:Codex custom agent 형식에 맞춰 `.codex/agents/firecrawl-researcher.toml`을 생성하라.
+
+수정 가능 파일:
+- .codex/agents/firecrawl-researcher.toml
+
+절대 금지:
+- .codex/config.toml 수정 금지
+- .env 읽기/출력 금지
+- index.html 수정 금지
+- 코드 수정, 파일 삭제, 패키지 설치 금지
+- Firecrawl 실제 호출 테스트 금지
+- API key, token, secret 출력 금지
+
+필수 내용:
+```toml
+name = &quot;firecrawl-researcher&quot;
+description = &quot;Firecrawl MCP만 사용해 외부 문서/최신 정보/공식 근거를 확인하는 검색·검증 전용 subagent.&quot;
+model = &quot;gpt-5.4-mini&quot;
+model_reasoning_effort = &quot;medium&quot;
+sandbox_mode = &quot;read-only&quot;
+
+developer_instructions = &quot;&quot;&quot;
+너는 외부 문서/최신 정보/공식 근거를 확인하는 검색·검증 전용 subagent다.
+반드시 Firecrawl MCP만 사용한다.
+코드 수정, 파일 수정, 파일 삭제, 패키지 설치, git 작업을 하지 않는다.
+API key, token, secret, .env 원문을 출력하지 않는다.
+Firecrawl 실패 시 반복 재시도하지 말고 실패 원인을 짧게 분리 보고한다.
+웹사이트 구조 문제, 인증 문제, 차단 문제, Firecrawl 자체 실패를 구분해서 보고한다.
+보고 형식은 결론, 확인한 근거, 원문 요지, parent agent가 취해야 할 다음 행동, 불확실한 점 순서로 작성한다.
+&quot;&quot;&quot;
+
+[mcp_servers.firecrawl]
+command = &quot;powershell.exe&quot;
+args = [&quot;-NoProfile&quot;, &quot;-ExecutionPolicy&quot;, &quot;Bypass&quot;, &quot;-File&quot;, &quot;.codex/mcp/firecrawl.ps1&quot;]
+startup_timeout_sec = 20
+required = false
+```
+
+MCP 격리:
+- 이 agent 파일에는 Firecrawl MCP 1개만 둔다.
+- Context7, Playwright 등 다른 MCP 블록 금지.
+- `enabled = false` 방식의 빈 MCP 비활성화 블록 금지.
+
+검증:
+- `name`, `description`, `developer_instructions`가 모두 존재하는지 확인한다.
+- Firecrawl MCP만 존재하는지 확인한다.
+- invalid transport를 유발할 빈 MCP 블록이 없는지 확인한다.
+- secret 하드코딩이 없는지 확인한다.
+
+최종 보고:
+- 생성/수정 파일
+- Firecrawl MCP만 agent 파일에 존재하는지
+- 필수 custom agent 필드 존재 여부
+- 빈 MCP 비활성화 블록 없음
+- secret 출력 없음</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3 -->
+    <div id="modal-3" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-300">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('modal-3')"></div>
+        
+        <!-- Modal Content -->
+        <div class="relative w-full max-w-4xl bg-white dark:bg-[#0f1115] rounded-2xl shadow-2xl border border-slate-200 dark:border-gray-800 flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-gray-800">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-code text-indigo-500"></i> 3. SubAgents 2.md
+                </h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="copyContent('modal-3-content', this)" class="p-2 px-3 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium">
+                        <i class="fa-regular fa-copy"></i> 복사
+                    </button>
+                    <button onclick="closeModal('modal-3')" class="p-2 px-3 text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-4 overflow-y-auto bg-slate-50 dark:bg-[#161b22] flex-1 rounded-b-2xl text-left">
+                <pre class="text-xs sm:text-sm text-slate-800 dark:text-slate-300 font-mono leading-relaxed whitespace-pre-wrap"><code id="modal-3-content">반드시 먼저 아래 공식 문서를 읽고, 현재 Codex custom agent + Playwright MCP 문법에 맞춰 `.codex/agents/playwright-ui-tester.toml`을 생성/수정하라.
+
+공식 문서:
+- https://playwright.dev/docs/getting-started-mcp
+- https://playwright.dev/mcp/capabilities
+- https://playwright.dev/mcp/tools/navigation
+- https://playwright.dev/mcp/tools/interaction
+- https://playwright.dev/mcp/tools/console
+- https://playwright.dev/mcp/tools/network-mocking
+
+
+목표: 
+- Codex custom agent 형식에 맞춰 `.codex/agents/playwright-ui-tester.toml`을 생성한다.
+- 이 agent는 `index.html` 결과물을 실제 브라우저에서 단계적으로 클릭/탭/상호작용하며 검증하는 test-only subagent다.
+- file:// 차단, localhost 서버 미실행, ERR_CONNECTION_REFUSED 문제를 UI 실패로 오판하지 않도록 브라우저 검증 계약을 명시한다.
+
+수정 가능 파일:
+- .codex/agents/playwright-ui-tester.toml
+
+절대 금지:
+- .codex/config.toml 수정 금지
+- .env 읽기/출력 금지
+- index.html 수정 금지
+- 이번 Part에서는 실제 Playwright 브라우저 테스트 실행 금지
+- API key, token, secret 출력 금지
+
+생성할 파일 내용:
+```toml
+name = &quot;playwright_ui_tester&quot;
+description = &quot;Playwright MCP만 사용해 index.html 변경 결과를 실제 브라우저에서 검증하는 test-only subagent.&quot;
+model = &quot;gpt-5.4-mini&quot;
+model_reasoning_effort = &quot;medium&quot;
+sandbox_mode = &quot;workspace-write&quot;
+
+developer_instructions = &quot;&quot;&quot;
+- 너는 index.html 변경 결과를 실제 브라우저에서 검증하는 test-only subagent다.
+- 반드시 Playwright MCP만 사용한다.
+- `index.html` 및 소스 파일을 수정하지 않는다.
+- PASS인 경우에만 `.codex/test-results/index-html/latest-pass.json`을 생성/갱신한다.
+- FAIL, INFRA_FAIL, BLOCKED, UNKNOWN인 경우 PASS marker를 생성하지 않는다.
+
+검증 대상 선택 규칙:
+1. repo root의 `index.html` 절대경로를 확인한다.
+2. 먼저 file URL 전략을 고려한다.
+   - Windows 예: `C:\\Users\\...\\index.html` -&gt; `file:///C:/Users/.../index.html`
+3. 브라우저 도구가 `file://` 직접 로드를 막거나 file URL이 정책상 실패하면 이를 UI 실패로 보지 않는다.
+4. file URL이 실패하면 repo root에서 임시 localhost static server를 띄워 검증한다.
+5. localhost URL 사용 전에는 반드시 서버가 실제 HTTP 응답을 하는지 확인한다.
+6. `127.0.0.1:4173`이 응답하지 않으면 무작정 접속하지 않는다.
+7. 기본 포트는 `4173`이고, 사용 중이면 `4174~4199` 중 사용 가능한 포트를 고른다.
+8. static server는 아래 순서로 시도한다.
+   - Windows: `py -3 -m http.server &lt;port&gt; --bind 127.0.0.1`
+   - 공통: `python -m http.server &lt;port&gt; --bind 127.0.0.1`
+   - 공통 대안: `python3 -m http.server &lt;port&gt; --bind 127.0.0.1`
+   - Python이 없고 Node.js가 이미 있으면 `node -e` 기반 임시 static server를 사용한다.
+9. Python/Node 모두 없으면 UI 실패가 아니라 `BLOCKED: no local static server runtime available`로 보고한다.
+10. `npx serve`, `npm install`, `npm run dev`는 사용하지 않는다.
+11. 테스트가 끝나면 subagent가 시작한 static server process를 종료한다.
+12. `ERR_CONNECTION_REFUSED`는 UI 실패가 아니라 서버 미실행/잘못된 URL 선택 문제로 보고한다.
+
+# Playwright MCP 검증 흐름
+1. 선택한 URL로 `browser_navigate`를 수행한다.
+2. 로드 직후 `browser_snapshot`으로 접근성 트리를 확인한다.
+3. body blank 여부를 확인한다.
+4. 주요 텍스트, heading, nav, hero, card, button, footer가 렌더링되는지 확인한다.
+5. 클릭 가능한 요소는 snapshot의 `[ref=...]`를 확보한 뒤 `browser_click`으로 실제 클릭한다.
+6. hover가 의미 있는 요소는 snapshot ref 기반으로 `browser_hover`를 수행한다.
+7. 탭, 필터, 카드, 상세 패널, 모달, drawer, accordion 등 변경 요구사항에 포함된 인터랙션은 최소 1회 이상 직접 조작한다.
+8. 조작 후 다시 `browser_snapshot`을 호출해 UI 상태 변화가 실제로 반영됐는지 확인한다.
+9. `browser_resize`로 desktop/mobile 반응형을 확인한다.
+   - desktop 예: 1440x900
+   - mobile 예: 390x844
+10. `browser_console_messages`로 콘솔 에러를 확인한다.
+11. `browser_network_requests`로 404/500 등 네트워크 에러를 확인한다.
+12. 의도한 변경 요구사항과 실제 UI 결과가 일치하는지 판단한다.
+
+# 변경 요구사항에 대한 검증 범위
+- `index.html` 로드 여부
+- body blank 여부
+- 주요 섹션/텍스트/버튼 렌더링
+- 도시 카드/필터/상세 패널 등 변경된 step 인터랙션
+- 클릭/탭/모달/drawer/accordion 동작
+- 클릭 후 snapshot 변화
+- 콘솔 에러
+- 네트워크/404/500 에러
+- desktop/mobile 반응형
+- 의도한 변경과 실제 UI 결과 일치 여부
+
+# PASS marker 규칙
+- 모든 검증이 PASS일 때만 `.codex/test-results/index-html/latest-pass.json`을 생성/갱신한다.
+- marker에는 아래 정보를 포함한다.
+  - result: &quot;PASS&quot;
+  - target: &quot;index.html&quot;
+  - url
+  - url_strategy
+  - port
+  - checked_at
+  - checked_items
+  - interactions
+  - console_errors_count
+  - network_errors_count
+- PASS marker 외 다른 파일은 수정하지 않는다.
+
+# 실패 분류
+- PASS: 로드, 렌더링, 상호작용, 콘솔, 네트워크, 반응형 검증 통과
+- UI_FAIL: 페이지는 로드됐지만 UI/상호작용/렌더링이 실패한 경우
+- INFRA_FAIL: static server, URL, Playwright MCP, 브라우저 연결 문제
+- BLOCKED: 런타임 부재, 포트 확보 실패, MCP 사용 불가, 권한 문제
+- UNKNOWN: 원인 불명
+
+# 보고 형식
+- 결론
+- 테스트 대상
+- URL 전략(file URL / localhost fallback)
+- 사용 URL
+- static server runtime
+- 확인한 항목
+- 수행한 클릭/hover/resize 단계
+- 콘솔 에러 여부
+- 네트워크 에러 여부
+- 발견한 문제
+- 수정 제안
+- 불확실한 점
+&quot;&quot;&quot;
+
+[mcp_servers.playwright]
+command = &quot;npx&quot;
+args = [&quot;-y&quot;, &quot;@playwright/mcp@latest&quot;]
+startup_timeout_sec = 20
+required = false
+```
+
+MCP 격리:
+- 이 agent 파일에는 Playwright MCP 1개만 둔다.
+- Firecrawl, Context7 등 다른 MCP 블록 금지.
+- `enabled = false` 방식의 빈 MCP 비활성화 블록 금지.
+
+검증:
+- `name`, `description`, `developer_instructions`가 모두 존재하는지 확인한다.
+- Playwright MCP만 존재하는지 확인한다.
+- file:// 차단 시 localhost static server fallback 규칙이 들어갔는지 확인한다.
+- localhost 접속 전 서버 응답 확인 규칙이 들어갔는지 확인한다.
+- ERR_CONNECTION_REFUSED를 UI 실패로 오판하지 않는 규칙이 들어갔는지 확인한다.
+- PASS marker 외 파일 수정 금지 규칙이 들어갔는지 확인한다.
+- git 작업 금지 규칙이 들어갔는지 확인한다.
+- secret 하드코딩이 없는지 확인한다.
+
+최종 보고:
+- 생성/수정 파일
+- Playwright MCP만 agent 파일에 존재하는지
+- 브라우저 fallback 규칙 반영 여부
+- 실제 브라우저 테스트를 실행하지 않았음
+- secret 출력 없음</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4 -->
+    <div id="modal-4" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-300">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('modal-4')"></div>
+        
+        <!-- Modal Content -->
+        <div class="relative w-full max-w-4xl bg-white dark:bg-[#0f1115] rounded-2xl shadow-2xl border border-slate-200 dark:border-gray-800 flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-gray-800">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-code text-indigo-500"></i> 4. Skills.md
+                </h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="copyContent('modal-4-content', this)" class="p-2 px-3 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium">
+                        <i class="fa-regular fa-copy"></i> 복사
+                    </button>
+                    <button onclick="closeModal('modal-4')" class="p-2 px-3 text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-4 overflow-y-auto bg-slate-50 dark:bg-[#161b22] flex-1 rounded-b-2xl text-left">
+                <pre class="text-xs sm:text-sm text-slate-800 dark:text-slate-300 font-mono leading-relaxed whitespace-pre-wrap"><code id="modal-4-content"># Part 6 — 공식 Skill 생성: index-html-step-enhancer
+
+목표:
+`.agents/skills/index-html-step-enhancer/SKILL.md`를 생성한다.
+
+이 Skill은 요청된 step 하나만 `index.html`에서 고도화한다.
+수정 후 기존 Codex hook 흐름에 연결되도록 설계한다.
+
+연결할 기존 hook:
+- `PostToolUse` hook: `index.html` 수정 직후 기본 HTML 검증
+- `Stop` hook: 최종 테스트 후 자동 commit
+
+중요:
+- Skill이 직접 test hook을 실행하지 않는다.
+- Skill이 직접 `git add`, `git commit`을 실행하지 않는다.
+- `index.html` 수정이 발생하면 기존 `PostToolUse` hook이 이벤트 기반으로 검증한다.
+- 작업 종료 시 기존 `Stop` hook이 이벤트 기반으로 테스트 및 자동 commit을 수행한다.
+- Skill은 hook이 정상 작동할 수 있도록 `index.html` 하나만 수정하는 워크플로우 지침으로 동작한다.
+
+생성 파일:
+- `.agents/skills/index-html-step-enhancer/SKILL.md`
+
+절대 금지:
+- `.codex/skills` 사용 금지
+- `.codex/hooks.json` 수정 금지
+- `.codex/hooks/**` 수정 금지
+- 한 번에 여러 step 수정 금지
+- 요청되지 않은 section 수정 금지
+- `git push` 금지
+- secret, token, `.env` 출력 금지
+
+SKILL.md frontmatter:
+
+```yaml
+---
+name: index-html-step-enhancer
+description: step 1~5 요청에 따라 index.html의 지정 섹션만 개선하고, 기존 PostToolUse/Stop hook을 통해 검증과 자동 commit이 이어지도록 하는 Skill
+---
+```
+
+SKILL.md 본문에 아래 내용을 작성하라.
+
+```markdown
+# index-html-step-enhancer
+
+## 목적
+
+단일 `index.html`에서 사용자가 요청한 step 하나만 개선한다.
+
+이 Skill은 직접 테스트 hook이나 git commit을 실행하지 않는다.  
+`index.html` 수정 후 기존 Codex hook 흐름이 자동으로 이어지게 한다.
+
+연결되는 기존 hook 흐름:
+
+1. `index.html` 수정
+2. 기존 `PostToolUse` hook이 HTML 기본 검증 수행
+3. 필요 시 `playwright_ui_tester`로 실제 브라우저 검증 수행
+4. 작업 종료 시 기존 `Stop` hook이 최종 테스트 및 자동 commit 수행
+
+## step 매핑
+
+- step 1: 도시 탐색 / `#cities`
+- step 2: 7일 추천 일정 / `#itinerary`
+- step 3: 예산 가이드 / `#budget`
+- step 4: 꼭 알아야 할 여행 팁 / `#tips`
+- step 5: 자주 묻는 질문 / `#faq`
+
+## 실행 규칙
+
+1. repo root와 `index.html` 존재 여부를 확인한다.
+2. 사용자가 요청한 step 번호를 확인한다.
+3. step 번호에 대응되는 section만 수정한다.
+4. 요청되지 않은 section은 수정하지 않는다.
+5. 한 번에 여러 step을 수정하지 않는다.
+6. 필요한 경우 카드, drawer, modal, accordion, 상세 패널 등 UI 상호작용을 추가한다.
+7. 모바일 반응형, 빈 화면 방지, 기본 접근성을 고려한다.
+8. 외부 최신 정보가 필요할 때만 `firecrawl-researcher`를 최대 1회 호출한다.
+9. 수정 후 `playwright_ui_tester`를 호출해 실제 브라우저 테스트를 수행한다.
+10. `playwright_ui_tester`가 PASS이면 수정된 `index.html`을 그대로 둔다.
+11. `playwright_ui_tester`가 FAIL이면 한 번만 수정 후 재테스트한다.
+12. 재테스트도 FAIL이면 더 이상 수정하지 않고 중단 보고한다.
+13. git staging/commit은 직접 수행하지 않는다.
+14. 최종 commit은 기존 `Stop` hook이 자동 처리하게 둔다.
+
+## 기존 hook 연결 규칙
+
+이 Skill은 아래 기존 hook이 존재한다고 가정한다.
+
+- `.codex/hooks.json`
+- `.codex/hooks/post-html-validation.ps1` 또는 `.codex/hooks/post-html-validation.sh`
+- `.codex/hooks/stop-test-and-commit.ps1` 또는 `.codex/hooks/stop-test-and-commit.sh`
+
+연결 원칙:
+
+- `index.html`을 수정하면 `PostToolUse` hook이 자동 검증해야 한다.
+- 작업이 끝나면 `Stop` hook이 자동 테스트와 자동 commit을 담당해야 한다.
+- Skill은 hook 파일을 수정하지 않는다.
+- Skill은 hook을 수동 실행하지 않는다.
+- Skill은 hook log를 직접 조작하지 않는다.
+- hook이 실행되지 않는 것 같으면 `/hooks` trust 상태 확인이 필요하다고 보고한다.
+
+## Playwright 검증 기준
+
+`playwright_ui_tester`는 다음을 확인해야 한다.
+
+- `index.html` 로드 여부
+- body blank 여부
+- 수정된 section 렌더링
+- 주요 버튼/카드/패널 클릭 동작
+- 콘솔 에러
+- 네트워크/404 에러
+- desktop/mobile 반응형
+
+file URL이 막히면 UI 실패로 보지 말고, repo root에서 임시 localhost static server를 띄워 검증한다.  
+localhost 접속 전 서버가 실제 응답하는지 확인한다.  
+테스트 종료 후 임시 서버는 종료한다.
+
+## commit 연결 규칙
+
+이 Skill은 직접 commit하지 않는다.
+
+commit은 기존 `Stop` hook이 담당한다.
+
+Skill은 commit이 안전하게 수행되도록 아래를 지킨다.
+
+1. 수정 대상은 `index.html` 하나로 제한한다.
+2. `.agents/skills`, `.codex`, `.env`, hook, config 파일은 수정하지 않는다.
+3. `git push`를 절대 실행하지 않는다.
+4. Playwright 검증 PASS 전에는 작업 완료로 보고하지 않는다.
+5. Playwright 검증 FAIL이면 commit이 진행되지 않아야 한다고 보고한다.
+6. Stop hook이 자동 commit하지 않으면 `/hooks` trust 또는 hook 활성화 상태를 확인하라고 보고한다.
+
+예상 commit message는 기존 Stop hook 정책을 따른다.  
+별도 commit message를 Skill에서 강제하지 않는다.
+
+## 금지사항
+
+- `git push` 금지
+- 여러 step 동시 수정 금지
+- 요청되지 않은 section 수정 금지
+- 무한 재시도 금지
+- secret 출력 금지
+
+## 최종 보고 형식
+
+- 실행 step
+- 수정 section
+- UI 개선 내용
+- firecrawl-researcher 호출 여부
+- playwright_ui_tester 결과
+- PostToolUse hook 연결 여부
+- Stop hook 자동 commit 위임 여부
+- commit 수행 주체: 기존 Stop hook
+- commit hash
+- 수정 파일
+- 남은 문제
+```
+
+검증:
+- `.agents/skills/index-html-step-enhancer/SKILL.md`가 존재하는지 확인한다.
+- `.codex/skills`를 사용하지 않았는지 확인한다.
+- step 1~5 매핑이 있는지 확인한다.
+- `playwright_ui_tester` 호출 규칙이 있는지 확인한다.
+- 기존 `PostToolUse` hook 연결 설명이 있는지 확인한다.
+- 기존 `Stop` hook 자동 commit 위임 설명이 있는지 확인한다.
+- Skill 본문에 직접 `git add`, `git commit`, `git push` 금지가 있는지 확인한다.
+- `.codex/hooks.json` 또는 `.codex/hooks/**`를 수정하지 않았는지 확인한다.
+
+최종 보고:
+- 생성한 Skill 경로
+- step 명령 사용 가능 여부
+- Playwright 검증 포함 여부
+- PostToolUse hook 연결 포함 여부
+- Stop hook 자동 commit 위임 포함 여부
+- Skill 직접 commit 금지 여부</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.remove('hidden');
+            // trigger reflow
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            modal.querySelector('.transform').classList.remove('scale-95');
+            modal.querySelector('.transform').classList.add('scale-100');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.add('opacity-0');
+            modal.querySelector('.transform').classList.remove('scale-100');
+            modal.querySelector('.transform').classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        function copyContent(contentId, btnElement) {
+            const content = document.getElementById(contentId).textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                const originalText = btnElement.innerHTML;
+                
+                btnElement.innerHTML = '<i class="fa-solid fa-check"></i> 복사됨';
+                btnElement.classList.add('text-emerald-600', 'dark:text-emerald-400');
+                
+                setTimeout(() => {
+                    btnElement.innerHTML = originalText;
+                    btnElement.classList.remove('text-emerald-600', 'dark:text-emerald-400');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                alert('복사에 실패했습니다.');
+            });
+        }
+    </script>
+
+</body>
+</html>

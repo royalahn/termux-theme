@@ -26,5 +26,12 @@
     "description": "Termux 환경 설정 스크립트(install.sh)와 ZSH 전용 설치 스크립트(zsh-install.sh)의 라인별 상세 분석을 제공합니다.",
     "category": "분석/인사이트",
     "date": "2026-05-27"
+  },
+  {
+    "title": "AI 에이전트 워크플로우 분석",
+    "filename": "agent_workflow_analysis.html",
+    "description": "MCP, 서브 에이전트, 스킬 등 AI 협업 시스템 구축 및 자동화 파이프라인의 개념을 초보자도 이해하기 쉽게 설명합니다.",
+    "category": "분석/인사이트",
+    "date": "2026-05-27"
   }
 ]
