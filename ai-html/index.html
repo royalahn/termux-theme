@@ -6,6 +6,9 @@
     <title>HTML Design Guide Viewer</title>
     <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
     
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <!-- Fonts -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap" rel="stylesheet">
@@ -159,7 +162,7 @@
             
             <div class="text-center space-y-6 reveal active">
                 <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-100 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/20 text-sky-600 dark:text-sky-400 text-sm font-semibold">
-                    ✨ AI Prompts & Guidelines
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i> AI Prompts & Guidelines
                 </div>
                 <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.2]">
                     Modern Startup Style<br>
@@ -176,7 +179,7 @@
                 <!-- Prompt Template -->
                 <section class="reveal">
                     <h3 class="text-2xl font-bold mb-4 text-slate-900 dark:text-white flex items-center gap-2">
-                        <span class="text-sky-500">📋</span> 프롬프트 템플릿
+                        <i class="fa-solid fa-clipboard-list text-2xl text-sky-500 drop-shadow-sm"></i> 프롬프트 템플릿
                     </h3>
                     <div class="p-6 bg-slate-100 dark:bg-gray-800 rounded-2xl border-l-4 border-sky-500">
                         <p class="text-slate-700 dark:text-slate-300 italic font-medium leading-relaxed">
@@ -188,7 +191,7 @@
                 <!-- Tech Stack -->
                 <section class="reveal">
                     <h3 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center gap-2">
-                        <span class="text-purple-500">🛠️</span> 기술 스택 (Tech Stack)
+                        <i class="fa-solid fa-layer-group text-2xl text-purple-500 drop-shadow-sm"></i> 기술 스택 (Tech Stack)
                     </h3>
                     <div class="grid sm:grid-cols-2 gap-4">
                         <div class="p-6 bg-white dark:bg-gray-800 rounded-2xl border border-slate-200 dark:border-gray-700 card-hover">
@@ -217,32 +220,32 @@
                 <!-- Design Principles -->
                 <section class="reveal">
                     <h3 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center gap-2">
-                        <span class="text-emerald-500">🎨</span> 디자인 핵심 원칙
+                        <i class="fa-solid fa-palette text-2xl text-emerald-500 drop-shadow-sm"></i> 디자인 핵심 원칙
                     </h3>
                     <ul class="space-y-4">
                         <li class="p-5 bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 flex gap-4 card-hover">
-                            <span class="text-2xl">🌓</span>
+                            <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/20 text-indigo-500 flex items-center justify-center flex-shrink-0 drop-shadow-sm"><i class="fa-solid fa-circle-half-stroke text-xl"></i></div>
                             <div>
                                 <strong class="dark:text-white block mb-1">테마 전환 지원 (Light / Dark)</strong>
                                 <span class="text-slate-600 dark:text-slate-400 text-sm">`tailwind.config`에서 `darkMode: 'class'`를 설정하고, 우측 상단에 해/달 아이콘이 바뀌는 테마 토글 버튼을 반드시 포함. `localStorage` 이용.</span>
                             </div>
                         </li>
                         <li class="p-5 bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 flex gap-4 card-hover">
-                            <span class="text-2xl">🪟</span>
+                            <div class="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-500/20 text-cyan-500 flex items-center justify-center flex-shrink-0 drop-shadow-sm"><i class="fa-solid fa-border-all text-xl"></i></div>
                             <div>
                                 <strong class="dark:text-white block mb-1">Glassmorphism (유리 질감)</strong>
                                 <span class="text-slate-600 dark:text-slate-400 text-sm">상단 고정 헤더는 반투명 배경과 `backdrop-blur` (최소 12px) 효과를 사용하여 스크롤 시 뒷배경이 은은하게 비치도록 구성.</span>
                             </div>
                         </li>
                         <li class="p-5 bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 flex gap-4 card-hover">
-                            <span class="text-2xl">✨</span>
+                            <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-500/20 text-amber-500 flex items-center justify-center flex-shrink-0 drop-shadow-sm"><i class="fa-solid fa-wand-magic-sparkles text-xl"></i></div>
                             <div>
                                 <strong class="dark:text-white block mb-1">Glow & Gradients 이펙트</strong>
                                 <span class="text-slate-600 dark:text-slate-400 text-sm">강조 텍스트에는 그라데이션과 반짝임 애니메이션을, 배경에는 방사형 그라데이션(Radial Gradient) 박스를 배치하여 공간감 부여.</span>
                             </div>
                         </li>
                         <li class="p-5 bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 flex gap-4 card-hover">
-                            <span class="text-2xl">🖱️</span>
+                            <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-500/20 text-rose-500 flex items-center justify-center flex-shrink-0 drop-shadow-sm"><i class="fa-solid fa-arrow-pointer text-xl"></i></div>
                             <div>
                                 <strong class="dark:text-white block mb-1">동적 요소 및 애니메이션 (Hover & Reveal)</strong>
                                 <span class="text-slate-600 dark:text-slate-400 text-sm">카드 호버 시 떠오르는 효과(`translate-y-[-5px]`), 부드러운 스크롤 페이드인(`Fade-in-up`), 요소 부유 효과(`float`) 적용.</span>
@@ -254,7 +257,7 @@
                 <!-- Reference Code -->
                 <section class="reveal">
                     <h3 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center gap-2">
-                        <span class="text-amber-500">💻</span> 핵심 코드 스니펫
+                        <i class="fa-solid fa-laptop-code text-2xl text-amber-500 drop-shadow-sm"></i> 핵심 코드 스니펫
                     </h3>
                     <p class="text-slate-600 dark:text-slate-400 mb-4">AI가 완벽하게 일관된 스타일을 재현할 수 있도록, 아래의 핵심 CSS와 Tailwind Config 코드를 프롬프트에 함께 제공해주세요.</p>
                     
@@ -317,7 +320,7 @@
 
                 <div class="p-6 bg-sky-50 dark:bg-sky-900/20 rounded-2xl border border-sky-100 dark:border-sky-800/30 reveal">
                     <p class="text-sky-800 dark:text-sky-200 flex gap-3 text-sm sm:text-base">
-                        <span class="text-xl">💡</span>
+                        <i class="fa-solid fa-lightbulb text-xl flex-shrink-0"></i>
                         <span><strong>사용 팁:</strong> 특정 프로젝트에 맞게 '권장 레이아웃 구조' 항목에 원하시는 세부 섹션 이름이나 내용을 추가해서 질문하시면 훨씬 더 정확한 페이지를 생성해냅니다.</span>
                     </p>
                 </div>
