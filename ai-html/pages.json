@@ -1,0 +1,16 @@
+[
+  {
+    "title": "HTML 디자인 가이드",
+    "filename": "html_design_guide.html",
+    "description": "모던 스타트업 및 SaaS 스타일의 고품질 HTML 템플릿 생성을 위한 AI 프롬프트 가이드와 핵심 CSS 예제를 제공합니다.",
+    "category": "가이드라인",
+    "date": "2026-05-27"
+  },
+  {
+    "title": "프롬프트 엔지니어링 기초",
+    "filename": "prompt_engineering.html",
+    "description": "AI와의 효과적인 커뮤니케이션을 위한 프롬프트 작성 기법 및 노하우를 정리한 기술 문서입니다.",
+    "category": "튜토리얼",
+    "date": "2026-05-26"
+  }
+]

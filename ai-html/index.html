@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 생성 HTML 카탈로그</title>
+    
+    <!-- Fonts and Icons -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        mono: ['"Cascadia Mono"', 'monospace'],
+                    },
+                    colors: { 
+                        gray: { 900: '#0f1115', 800: '#161b22', 700: '#21262d' } 
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: { 
+                            '0%, 100%': { transform: 'translateY(0)' }, 
+                            '50%': { transform: 'translateY(-20px)' } 
+                        },
+                        fadeInUp: { 
+                            '0%': { opacity: '0', transform: 'translateY(30px)' }, 
+                            '100%': { opacity: '1', transform: 'translateY(0)' } 
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-header {
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(12px); 
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .dark .glass-header {
+            background: rgba(15, 17, 21, 0.7); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #0ea5e9, #6366f1, #a855f7);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+        }
+        .dark .gradient-text {
+            background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+        }
+        .glow-bg {
+            position: absolute; 
+            width: 800px; 
+            height: 800px; 
+            z-index: -1; 
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+            top: -300px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            transition: all 0.5s ease;
+        }
+        .dark .glow-bg {
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(15, 17, 21, 0) 70%);
+        }
+        .reveal { 
+            opacity: 0; 
+            transform: translateY(30px); 
+            transition: all 0.8s ease-out; 
+        }
+        .reveal.active { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white antialiased transition-colors duration-300 min-h-screen relative overflow-x-hidden">
+
+    <!-- Glow Background -->
+    <div class="glow-bg"></div>
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-50 glass-header transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white shadow-lg">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight">AI HTML Hub</span>
+            </div>
+            
+            <button id="theme-toggle" class="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-sm">
+                <i id="theme-icon" class="fa-solid fa-moon text-gray-600 dark:text-gray-300"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+        <!-- Hero Section -->
+        <section class="text-center mb-16 reveal active">
+            <span class="inline-block py-1 px-3 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-6 border border-blue-100 dark:border-blue-800">
+                Documentation Center
+            </span>
+            <h1 class="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight">
+                AI가 작성한 <br class="md:hidden"/> <span class="gradient-text">웹 문서 모음</span>
+            </h1>
+            <p class="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                단일 랜딩 페이지부터 복잡한 웹 애플리케이션 가이드까지, AI를 활용하여 생성된 고품질의 HTML 문서들을 한 곳에서 편리하게 탐색해 보세요.
+            </p>
+            
+            <!-- Search Bar -->
+            <div class="max-w-xl mx-auto relative group">
+                <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors"></i>
+                <input type="text" id="search-input" placeholder="원하는 문서를 검색해보세요..." class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-900 dark:text-white placeholder-gray-400">
+            </div>
+        </section>
+
+        <!-- Dynamic Catalog Grid -->
+        <section>
+            <div class="flex items-center gap-3 mb-8 reveal active">
+                <i class="fa-solid fa-folder-open text-blue-500 text-xl"></i>
+                <h2 class="text-2xl font-bold">모든 문서</h2>
+                <div class="flex-grow h-px bg-gray-200 dark:bg-gray-800 ml-4"></div>
+                <span id="doc-count" class="text-sm font-medium text-gray-500 dark:text-gray-400">0개의 문서</span>
+            </div>
+
+            <!-- This container will be populated by pages.json -->
+            <div id="pages-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards will be injected here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800 mt-10 py-10 text-center text-gray-500 dark:text-gray-400 text-sm">
+        <div class="flex items-center justify-center gap-2 mb-4 text-xl">
+            <i class="fa-brands fa-html5 text-orange-500"></i>
+            <i class="fa-brands fa-css3-alt text-blue-500"></i>
+            <i class="fa-brands fa-js text-yellow-400"></i>
+        </div>
+        <p>&copy; 2026 AI HTML Hub. All rights reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Theme toggle logic
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                    themeIcon.classList.replace('fa-sun', 'fa-moon');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                    themeIcon.classList.replace('fa-moon', 'fa-sun');
+                }
+            });
+
+            // IntersectionObserver for reveal animations
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+            // Data logic
+            let allPages = [];
+            const container = document.getElementById('pages-container');
+            const searchInput = document.getElementById('search-input');
+            const docCount = document.getElementById('doc-count');
+
+            function renderPages(pagesToRender) {
+                container.innerHTML = '';
+                docCount.textContent = `${pagesToRender.length}개의 문서`;
+
+                if (pagesToRender.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-full py-16 text-center bg-gray-100 dark:bg-gray-800/50 rounded-3xl border border-dashed border-gray-300 dark:border-gray-700 reveal active">
+                            <i class="fa-solid fa-folder-open text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-gray-500 dark:text-gray-400 text-lg">검색 결과가 없습니다.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                pagesToRender.forEach((page, index) => {
+                    const card = document.createElement('a');
+                    card.href = page.filename;
+                    card.className = 'group block p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:translate-y-[-5px] border border-gray-100 dark:border-gray-700 reveal';
+                    card.style.transitionDelay = `${index * 50}ms`;
+
+                    const categoryBadge = page.category 
+                        ? `<span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-gray-300">${page.category}</span>`
+                        : '';
+
+                    const dateInfo = page.date 
+                        ? `<div class="text-xs font-medium text-gray-400 dark:text-gray-500 flex items-center gap-1.5"><i class="fa-regular fa-calendar"></i> ${page.date}</div>` 
+                        : '';
+
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between mb-5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-300 group-hover:scale-110 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-all shadow-sm">
+                                    <i class="fa-solid fa-file-code text-xl"></i>
+                                </div>
+                                ${categoryBadge}
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-700 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white text-gray-300 dark:text-gray-500 transition-colors">
+                                <i class="fa-solid fa-arrow-right text-sm"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">${page.title}</h3>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm line-clamp-2 mb-4 leading-relaxed">${page.description}</p>
+                        ${dateInfo}
+                    `;
+                    container.appendChild(card);
+                    observer.observe(card);
+                });
+            }
+
+            try {
+                const response = await fetch('pages.json?t=' + new Date().getTime());
+                allPages = await response.json();
+                renderPages(allPages);
+
+                // Search Event
+                searchInput.addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase();
+                    const filtered = allPages.filter(p => 
+                        p.title.toLowerCase().includes(term) || 
+                        p.description.toLowerCase().includes(term) ||
+                        (p.category && p.category.toLowerCase().includes(term))
+                    );
+                    renderPages(filtered);
+                });
+
+            } catch (error) {
+                console.error('Failed to load pages catalog:', error);
+                container.innerHTML = `
+                    <div class="col-span-full p-8 text-center bg-red-50 dark:bg-red-900/20 text-red-500 rounded-3xl border border-red-100 dark:border-red-800">
+                        <i class="fa-solid fa-circle-exclamation text-3xl mb-3"></i>
+                        <p class="font-medium">문서 목록을 불러오지 못했습니다.</p>
+                        <p class="text-sm mt-1 opacity-80">pages.json 파일이 존재하고 유효한 형식인지, 로컬 웹 서버로 접속했는지 확인해주세요.</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
