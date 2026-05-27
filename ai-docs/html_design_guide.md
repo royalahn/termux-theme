@@ -1,15 +1,15 @@
-# 🚀 Modern Startup Style HTML Design Guide
+# Modern Startup Style HTML Design Guide
 
 이 가이드는 AI에게 **"모던 스타트업/SaaS 스타일의 고품질 HTML 랜딩 페이지"**를 생성해달라고 요청할 때 사용할 수 있는 프롬프트 가이드입니다. 이 문서의 내용을 복사하여 AI에게 전달하면, 현재와 같은 높은 퀄리티의 결과물을 일관되게 얻을 수 있습니다.
 
-## 📋 프롬프트 템플릿 (AI에게 복사해서 전달할 내용)
+## 프롬프트 템플릿 (AI에게 복사해서 전달할 내용)
 
 > "새로운 랜딩 페이지(또는 웹 페이지)를 만들려고 해. **Modern Startup / SaaS 스타일**로 디자인해 줘. 다음의 디자인 가이드라인, 기술 스택, 그리고 **핵심 CSS 코드**를 반드시 참고해서 하나의 완전한 HTML 파일로 작성해 주면 돼."
 
 ### 1. 기술 스택 (Tech Stack)
 *   **CSS Framework:** Tailwind CSS (CDN 방식 사용, `<script src="https://cdn.tailwindcss.com"></script>`)
 *   **Fonts:** 본문용 메인 폰트 `Pretendard` (CDN), 고정폭(Code, Pre 등) 폰트 `Cascadia Mono` (Google Fonts)
-*   **Icons:** 외부 라이브러리 없이 순수 SVG로 직접 삽입 (Heroicons 스타일)
+*   **Icons:** 이모지를 절대 사용하지 말고, Font Awesome 6.5.1 CDN을 포함하여 `<i class="fa-solid fa-user"></i>` 처럼 심플한 폰트 아이콘을 사용할 것.
 *   **Script:** Vanilla Javascript (스크롤 애니메이션 및 테마 토글, 클릭 이벤트 등)
 
 ### 2. 디자인 핵심 원칙 (Design Principles)
@@ -37,9 +37,10 @@
 AI가 완벽하게 일관된 스타일을 재현할 수 있도록, 아래의 핵심 CSS와 Tailwind Config 코드를 프롬프트에 함께 제공해주세요.
 
 ```html
-<!-- 폰트 설정 (Pretendard & Cascadia Mono) -->
+<!-- 폰트 및 아이콘 설정 (Pretendard, Cascadia Mono, Font Awesome) -->
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <!-- Tailwind Config 애니메이션 및 폰트 설정 예시 -->
 <script>
@@ -94,4 +95,4 @@ AI가 완벽하게 일관된 스타일을 재현할 수 있도록, 아래의 핵
 ```
 
 ---
-**💡 사용 팁:** 특정 프로젝트에 맞게 위 템플릿의 '권장 레이아웃 구조' 항목에 원하시는 세부 섹션 이름이나 내용을 추가해서 질문하시면 훨씬 더 정확한 페이지를 생성해냅니다.
+**사용 팁:** 특정 프로젝트에 맞게 위 템플릿의 '권장 레이아웃 구조' 항목에 원하시는 세부 섹션 이름이나 내용을 추가해서 질문하시면 훨씬 더 정확한 페이지를 생성해냅니다.
