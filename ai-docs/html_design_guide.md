@@ -10,7 +10,7 @@
 
 ## 프롬프트 템플릿 (AI에게 복사해서 전달할 내용)
 
-> "새로운 랜딩 페이지(또는 웹 페이지)를 만들려고 해. **먼저 `ai-docs/base_template.html` 파일의 내용을 전부 복사해.** 그리고 복사한 코드에서 `<main>` 태그 안의 내용만 비우고, 내가 요청하는 내용을 **Modern Startup / SaaS 스타일**로 채워넣어줘. Header, Footer, Head 태그 등은 절대 건드리지 마."
+> "새로운 랜딩 페이지(또는 웹 페이지)를 만들려고 해. **먼저 `ai-docs/base_template.html` 파일의 내용을 전부 복사해.** 복사한 코드에서 `<main>` 태그 안의 내용을 비우고, 내가 요청하는 내용을 **Modern Startup / SaaS 스타일**로 채워넣어줘. 단, Header의 로고 아이콘(`<svg>`)과 Title 텍스트(`<h1>`)는 생성하는 페이지의 성격에 맞게 적절히 변경해줘. 그 외 Footer, Head 태그 등의 기본 설정은 절대 건드리지 마."
 
 ### 1. 기술 스택 (Tech Stack)
 *   **CSS Framework:** Tailwind CSS (CDN 방식 사용, `<script src="https://cdn.tailwindcss.com"></script>`)
