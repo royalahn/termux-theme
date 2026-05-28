@@ -40,5 +40,12 @@
     "description": "멀티에이전트 팀과의 협업, 하네스 및 플러그인 생태계를 활용한 풀스택 애플리케이션 개발 실전 가이드입니다.",
     "category": "강의 요약",
     "date": "2026-05-28"
+  },
+  {
+    "title": "Cursor AI 실전 리팩토링 전략",
+    "filename": "cursor_refactoring.html",
+    "description": "Cursor AI를 활용하여 스파게티 코드와 기술 부채를 해결하고, 팀 단위 리팩토링을 수행하는 실전 가이드입니다.",
+    "category": "강의 요약",
+    "date": "2026-05-28"
   }
 ]
