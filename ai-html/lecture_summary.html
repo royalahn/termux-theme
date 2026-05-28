@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>멀티에이전트 오케스트레이션 실전 요약 - Termux Theme</title>
+    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        mono: ['"Cascadia Mono"', 'Pretendard', 'monospace'],
+                    },
+                    colors: {
+                        gray: {
+                            900: '#0f1115',
+                            800: '#161b22',
+                            700: '#21262d',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        // 초기 테마 설정 (기본값 Light)
+        if (localStorage.theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+            updateThemeIcon();
+        }
+        
+        function updateThemeIcon() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            if (sunIcon && moonIcon) {
+                sunIcon.style.display = isDark ? 'block' : 'none';
+                moonIcon.style.display = isDark ? 'none' : 'block';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', updateThemeIcon);
+    </script>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        html, body {
+            overflow-x: hidden;
+        }
+        body {
+            font-family: 'Pretendard', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            word-break: keep-all;
+        }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .dark .glass-header {
+            background: rgba(15, 17, 21, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #0ea5e9, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 4s linear infinite;
+        }
+        .dark .gradient-text {
+            background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .light-card-hover:hover {
+            box-shadow: 0 20px 25px -5px rgba(14, 165, 233, 0.1), 0 10px 10px -5px rgba(14, 165, 233, 0.04);
+            border-color: #7dd3fc;
+        }
+        .dark .dark-card-hover:hover {
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.1);
+            border-color: #38bdf8;
+        }
+        .glow-bg {
+            position: absolute;
+            width: 100%;
+            max-width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+            top: -300px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+        .dark .glow-bg {
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(15, 17, 21, 0) 70%);
+        }
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Terminal window styles */
+        .terminal-window {
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .dark .terminal-window {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid #21262d;
+        }
+        .terminal-header {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #e2e8f0;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        .dark .terminal-header {
+            background: #0f1115;
+            border-bottom: 1px solid #21262d;
+        }
+        .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+        pre, code, .code-block { font-family: "Cascadia Mono", "Pretendard", monospace; }
+        
+        .faq-item {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-[#0f1115] text-slate-900 dark:text-e2e8f0 min-h-screen flex flex-col selection:bg-sky-200 selection:text-sky-900 dark:selection:bg-sky-500/30 dark:selection:text-sky-200">
+
+    <div class="glow-bg"></div>
+
+    <!-- Header Section -->
+    <header class="glass-header sticky top-0 z-50 py-4 px-6 sm:px-12 lg:px-24">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
+                    <i class="fa-solid fa-users-gear text-lg"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                    Multi-Agent <span class="gradient-text">Orchestration</span>
+                </h1>
+            </div>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-8 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                    <li><a href="index.html" class="hover:text-sky-500 transition-colors">홈</a></li>
+                    <li><a href="#" class="text-sky-500 transition-colors">강의 요약</a></li>
+                </ul>
+            </nav>
+            <div class="flex items-center gap-4">
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleTheme()" class="p-2 rounded-full bg-slate-200 dark:bg-gray-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-gray-700 transition-colors" aria-label="Toggle Theme">
+                    <!-- Sun Icon (shows in dark mode) -->
+                    <svg id="sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <!-- Moon Icon (shows in light mode) -->
+                    <svg id="moon-icon" class="w-5 h-5 block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+                
+                <a href="https://github.com/royalahn/termux-theme" target="_blank" class="hidden sm:flex px-5 py-2.5 rounded-full bg-slate-900 dark:bg-white/10 hover:bg-slate-800 dark:hover:bg-white/20 text-white font-medium text-sm transition-all border border-transparent dark:border-white/10 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path></svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Section -->
+    <main class="flex-grow pb-24 px-6 sm:px-12 lg:px-24 pt-12">
+        <div class="max-w-7xl mx-auto">
+            
+            <!-- Hero Section -->
+            <div class="flex flex-col lg:flex-row items-center gap-12 mb-24 reveal">
+                <div class="w-full lg:w-1/2 space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-semibold border border-indigo-200 dark:border-indigo-800/50">
+                        <i class="fa-solid fa-graduation-cap"></i> 강의 핵심 요약
+                    </div>
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                        멀티에이전트 <br/>
+                        <span class="gradient-text">오케스트레이션</span> 실전
+                    </h2>
+                    <p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl">
+                        단일 AI 어시스턴트에서 벗어나, 역할이 나뉜 멀티에이전트 팀과 협업하는 방법을 다룹니다. 하네스와 플러그인을 활용하여 아이디어부터 배포까지의 풀스택 사이클을 구축하세요.
+                    </p>
+                    <div class="pt-4 flex flex-wrap gap-4">
+                        <a href="#core-concepts" class="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-lg shadow-indigo-500/30 transition-all flex items-center gap-2">
+                            핵심 내용 보기 <i class="fa-solid fa-arrow-down"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="w-full lg:w-1/2 animate-float">
+                    <div class="terminal-window bg-slate-900 text-slate-300">
+                        <div class="terminal-header">
+                            <div class="terminal-dot dot-red"></div>
+                            <div class="terminal-dot dot-yellow"></div>
+                            <div class="terminal-dot dot-green"></div>
+                            <span class="ml-2 text-xs font-mono text-slate-500">agent-workflow.sh</span>
+                        </div>
+                        <div class="p-6 font-mono text-sm space-y-3">
+                            <p><span class="text-emerald-400">➜</span> <span class="text-sky-300">~</span> <span class="text-slate-100">/plan</span> <span class="text-slate-500"># 기획 에이전트 승인</span></p>
+                            <p class="text-slate-400">[Agent: Planner] PRD.md 작성 완료.</p>
+                            <p><span class="text-emerald-400">➜</span> <span class="text-sky-300">~</span> <span class="text-slate-100">/superpowers:execute-plan</span> <span class="text-slate-500"># 구현 에이전트 실행</span></p>
+                            <p class="text-slate-400">[Sub-agent: Auth] 🔴 RED 테스트 작성 중...</p>
+                            <p class="text-slate-400">[Sub-agent: Auth] 🟢 GREEN 최소 구현 및 통과 완료.</p>
+                            <p class="text-slate-400">[Sub-agent: DB] 🔴 RED 테스트 작성 중...</p>
+                            <p class="text-slate-400">[Sub-agent: DB] 🟢 GREEN 스키마 마이그레이션 통과 완료.</p>
+                            <p><span class="text-emerald-400">➜</span> <span class="text-sky-300">~</span> <span class="text-slate-100">/ship</span> <span class="text-slate-500"># 자동 배포</span></p>
+                            <p class="text-indigo-400 font-bold">🚀 Successfully deployed to production!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Grid -->
+            <div id="core-concepts" class="mb-16 pt-10 reveal">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold text-slate-900 dark:text-white mb-4">강의 핵심 포인트 4가지</h3>
+                    <p class="text-slate-600 dark:text-slate-400">우리가 놓치고 있었던 에이전트 활용의 정석</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Feature 1 -->
+                    <div class="feature-card light-card-hover dark-card-hover bg-white dark:bg-gray-800/50 p-8 rounded-2xl border border-slate-200 dark:border-gray-700">
+                        <div class="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-6">
+                            <i class="fa-solid fa-file-code text-xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 dark:text-white mb-3">01. 하네스와 환경 설정</h4>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                            프롬프트를 매번 입력하지 마세요. <code>CLAUDE.md</code>와 <code>AGENTS.md</code>를 사용하여 프로젝트 룰, 기술 스택, 금지 사항을 환경에 한 번에 정의합니다. 이는 에이전트에게 <strong>신입사원 온보딩</strong>을 해주는 것과 같습니다.
+                        </p>
+                        <ul class="text-sm text-slate-500 dark:text-slate-400 space-y-2">
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i> 기술 스택 버전까지 명시 (예: Next.js 14 App Router)</li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i> 부정 룰("~하지 말 것")을 강력하게 적용</li>
+                        </ul>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="feature-card light-card-hover dark-card-hover bg-white dark:bg-gray-800/50 p-8 rounded-2xl border border-slate-200 dark:border-gray-700">
+                        <div class="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-6">
+                            <i class="fa-solid fa-network-wired text-xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 dark:text-white mb-3">02. 멀티 에이전트 협업</h4>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                            하나의 에이전트가 기획부터 검증까지 모두 할 수 없습니다. <strong>Planner, Coder, Reviewer, Tester</strong>로 역할을 분리하여 컨텍스트 폭발을 막고 병렬로 실행하여 생산성을 극대화합니다.
+                        </p>
+                        <ul class="text-sm text-slate-500 dark:text-slate-400 space-y-2">
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i> 각 Sub-agent는 독립된 컨텍스트 윈도우 사용</li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i> 방향성 검증을 위해 <code>/plan</code> 모드 적극 활용</li>
+                        </ul>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="feature-card light-card-hover dark-card-hover bg-white dark:bg-gray-800/50 p-8 rounded-2xl border border-slate-200 dark:border-gray-700">
+                        <div class="w-12 h-12 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-6">
+                            <i class="fa-solid fa-plug text-xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 dark:text-white mb-3">03. 강력한 플러그인 생태계</h4>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                            표준 셋업을 제공하는 <strong>Superpowers</strong>와 <strong>gstack</strong> 플러그인을 활용합니다. 개발 워크플로우를 강제로 TDD 사이클에 맞추거나, 가상의 팀 페르소나를 부여할 수 있습니다.
+                        </p>
+                        <ul class="text-sm text-slate-500 dark:text-slate-400 space-y-2">
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i> Superpowers: Hard Gate TDD 자동 발동</li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i> gstack: 6가지 강제 질문으로 완벽한 스펙 정의</li>
+                        </ul>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="feature-card light-card-hover dark-card-hover bg-white dark:bg-gray-800/50 p-8 rounded-2xl border border-slate-200 dark:border-gray-700">
+                        <div class="w-12 h-12 rounded-lg bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-6">
+                            <i class="fa-solid fa-layer-group text-xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 dark:text-white mb-3">04. RAG 기반 컨텍스트 관리</h4>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                            검색 증강 생성(RAG)을 통해 코드 에이전트의 검색 인프라를 이해합니다. 원본 문서를 청킹(Chunking)하고 벡터 DB에 저장하여 유사도 높은 컨텍스트를 빠르고 정확하게 제공합니다.
+                        </p>
+                        <ul class="text-sm text-slate-500 dark:text-slate-400 space-y-2">
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i> 모델의 한계(환각)를 보완하는 핵심 기술</li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-2"></i> 파일 횡단 및 코드 탐색의 효율성 향상</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Block -->
+            <div class="mt-24 mb-16 reveal">
+                <div class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-800 dark:to-gray-900 rounded-3xl p-8 md:p-12 border border-slate-200 dark:border-gray-700 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
+                        <i class="fa-solid fa-sitemap text-9xl text-indigo-500"></i>
+                    </div>
+                    
+                    <h3 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-6">실전 워크플로우 5단계</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-8 max-w-2xl">
+                        강의에서 제시한 풀스택 애플리케이션(Next.js + DB) 개발 사이클입니다. 에이전트가 주도하고 개발자가 검토합니다.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm relative">
+                            <div class="text-xs font-bold text-indigo-500 tracking-wider mb-2">STEP 1</div>
+                            <h5 class="font-bold text-slate-900 dark:text-white mb-1">기획</h5>
+                            <p class="text-sm text-slate-500 dark:text-slate-400"><code>/plan</code><br/>목표 및 PRD 작성</p>
+                            <div class="hidden md:block absolute top-1/2 -right-3 text-slate-300 dark:text-slate-600 transform -translate-y-1/2">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm relative">
+                            <div class="text-xs font-bold text-indigo-500 tracking-wider mb-2">STEP 2</div>
+                            <h5 class="font-bold text-slate-900 dark:text-white mb-1">설계</h5>
+                            <p class="text-sm text-slate-500 dark:text-slate-400"><code>/plan-eng-review</code><br/>아키텍처 및 DB 설계</p>
+                            <div class="hidden md:block absolute top-1/2 -right-3 text-slate-300 dark:text-slate-600 transform -translate-y-1/2">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-indigo-200 dark:border-indigo-500/50 shadow-md relative">
+                            <div class="text-xs font-bold text-indigo-500 tracking-wider mb-2">STEP 3</div>
+                            <h5 class="font-bold text-slate-900 dark:text-white mb-1">구현</h5>
+                            <p class="text-sm text-slate-500 dark:text-slate-400"><code>/build</code><br/>TDD 기반 병렬 코딩</p>
+                            <div class="hidden md:block absolute top-1/2 -right-3 text-slate-300 dark:text-slate-600 transform -translate-y-1/2">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm relative">
+                            <div class="text-xs font-bold text-indigo-500 tracking-wider mb-2">STEP 4</div>
+                            <h5 class="font-bold text-slate-900 dark:text-white mb-1">검증</h5>
+                            <p class="text-sm text-slate-500 dark:text-slate-400"><code>/qa</code> &amp; <code>/review</code><br/>코드 리뷰 및 테스트</p>
+                            <div class="hidden md:block absolute top-1/2 -right-3 text-slate-300 dark:text-slate-600 transform -translate-y-1/2">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm">
+                            <div class="text-xs font-bold text-indigo-500 tracking-wider mb-2">STEP 5</div>
+                            <h5 class="font-bold text-slate-900 dark:text-white mb-1">배포</h5>
+                            <p class="text-sm text-slate-500 dark:text-slate-400"><code>/ship</code><br/>Vercel CI/CD 반영</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Summary Section -->
+            <div class="mb-16 pt-10 reveal">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold text-slate-900 dark:text-white mb-4">강의 목차 및 상세 요약</h3>
+                    <p class="text-slate-600 dark:text-slate-400">초보자도 이해하기 쉬운 파트별 핵심 정리</p>
+                </div>
+                
+                <div class="space-y-6">
+                    <!-- Part 0 & 1 -->
+                    <div class="bg-white dark:bg-gray-800/80 rounded-2xl p-8 border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="px-3 py-1 bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 font-bold rounded-lg text-sm">Part 0 & 1</span>
+                            <h4 class="text-xl font-bold text-slate-900 dark:text-white">AI 기초와 에이전트의 차이</h4>
+                        </div>
+                        <ul class="text-slate-600 dark:text-slate-400 space-y-3 ml-2">
+                            <li><strong class="text-slate-800 dark:text-slate-200">코드 어시스턴트 vs 에이전트:</strong> 기존에는 AI에게 질문하고 코드를 복사해 사람이 직접 실행했다면(어시스턴트), 에이전트는 목표를 받으면 파일 작성, 명령어 실행, 검증까지 <strong>스스로 자율 루프(이해→계획→실행→검증)</strong>를 돌며 작업합니다.</li>
+                            <li><strong class="text-slate-800 dark:text-slate-200">RAG (검색 증강 생성):</strong> 모델의 환각(거짓말)을 줄이기 위해 원본 문서를 쪼개고(청킹) 벡터 DB에 저장하여, 질문과 유사도 높은 컨텍스트를 주입하는 인프라입니다.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Part 2 -->
+                    <div class="bg-white dark:bg-gray-800/80 rounded-2xl p-8 border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold rounded-lg text-sm">Part 2</span>
+                            <h4 class="text-xl font-bold text-slate-900 dark:text-white">하네스 (Harness): 환경에 한 번에 정의하기</h4>
+                        </div>
+                        <p class="text-slate-600 dark:text-slate-400 mb-3">
+                            AI에게 매번 코딩 스타일이나 스택을 설명할 필요가 없습니다. 신입사원 온보딩 매뉴얼처럼 <code>CLAUDE.md</code> 또는 <code>AGENTS.md</code> 파일 하나에 룰을 정의합니다.
+                        </p>
+                        <ul class="text-slate-600 dark:text-slate-400 space-y-3 ml-2">
+                            <li><strong class="text-slate-800 dark:text-slate-200">구체적 명시:</strong> "Next.js 14 App Router 사용", "Vitest로 단위 테스트" 등 버전까지 정확히 명시합니다.</li>
+                            <li><strong class="text-slate-800 dark:text-slate-200">하지 말 것:</strong> 긍정 룰보다 부정 룰("any 타입 금지", "인라인 색상 금지")이 모델을 통제하는 데 훨씬 강력합니다.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Part 3 -->
+                    <div class="bg-white dark:bg-gray-800/80 rounded-2xl p-8 border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 font-bold rounded-lg text-sm">Part 3</span>
+                            <h4 class="text-xl font-bold text-slate-900 dark:text-white">플러그인: Superpowers & gstack</h4>
+                        </div>
+                        <ul class="text-slate-600 dark:text-slate-400 space-y-3 ml-2">
+                            <li><strong class="text-slate-800 dark:text-slate-200">Superpowers:</strong> 개발 방법론을 강제합니다. TDD(테스트 주도 개발)를 강제 발동하여 테스트가 통과(GREEN)해야만 다음 코딩으로 넘어가는 등 안정적인 개발을 돕습니다.</li>
+                            <li><strong class="text-slate-800 dark:text-slate-200">gstack:</strong> CEO, EM(엔지니어링 매니저), 디자이너 등 가상의 팀 페르소나를 부여하여 6가지 강제 질문(Forcing Questions)으로 개발 전 확실한 설계를 유도합니다.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Part 4 & 5 -->
+                    <div class="bg-white dark:bg-gray-800/80 rounded-2xl p-8 border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 font-bold rounded-lg text-sm">Part 4 & 5</span>
+                            <h4 class="text-xl font-bold text-slate-900 dark:text-white">팀처럼 일하기 & 실전 풀스택 구축</h4>
+                        </div>
+                        <ul class="text-slate-600 dark:text-slate-400 space-y-3 ml-2">
+                            <li><strong class="text-slate-800 dark:text-slate-200">역할 분담:</strong> 한 에이전트가 모든 것을 하면 컨텍스트가 엉킵니다. 서브 에이전트(Sub-agents)를 활용하여 역할을 쪼개고 독립된 환경에서 병렬로 코드를 작성합니다.</li>
+                            <li><strong class="text-slate-800 dark:text-slate-200">Plan Mode 활용:</strong> 코드를 수정하기 전 반드시 읽기 전용인 <code>/plan</code> 모드로 방향성을 검토합니다. 실패 비용이 사실상 0원에 가깝습니다.</li>
+                            <li><strong class="text-slate-800 dark:text-slate-200">최종 배포:</strong> 로컬 환경에서의 확인과 테스트가 끝난 후, Github Push를 통해 Vercel에 연동된 자동 배포 환경을 구축하는 실습을 진행합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Practical Guide Section -->
+            <div class="mb-16 pt-10 reveal">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold text-slate-900 dark:text-white mb-4">실전 가이드 및 꿀팁</h3>
+                    <p class="text-slate-600 dark:text-slate-400">당장 내 프로젝트에 적용할 수 있는 핵심 행동 강령</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Tip 1 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-slate-200 dark:border-gray-700 shadow-sm hover:-translate-y-1 transition-transform duration-300">
+                        <div class="text-rose-500 mb-4">
+                            <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-3">자주 빠지는 함정 3가지</h4>
+                        <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-3 list-disc ml-4">
+                            <li><strong>Auto Mode 무인 실행 금지:</strong> 자율 루프가 통제 없이 폭주하면 크레딧이 전소될 수 있습니다. 단계마다 사람의 승인을 거치세요.</li>
+                            <li><strong>오버 엔지니어링:</strong> 단순한 1줄짜리 버그 수정에 5명의 멀티 에이전트를 부르지 마세요. 가벼운 건 직접 고치는 게 훨씬 빠릅니다.</li>
+                            <li><strong>사람의 리뷰 생략:</strong> 프로덕션 장애의 99%는 사람이 마지막 승인 게이트를 무시했을 때 발생합니다.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Tip 2 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-slate-200 dark:border-gray-700 shadow-sm hover:-translate-y-1 transition-transform duration-300">
+                        <div class="text-blue-500 mb-4">
+                            <i class="fa-solid fa-comment-dots text-2xl"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-3">프롬프트 작성 4원칙</h4>
+                        <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-3 list-decimal ml-4">
+                            <li><strong>목표를 동사로 명확히:</strong> "게시판 UI" 대신 "게시판 UI를 만들고 글쓰기가 되는지 확인해" 라고 지시하세요.</li>
+                            <li><strong>컨텍스트 우선 제공:</strong> 룰, 참조 파일, 관련 선례를 가장 먼저 입력하세요.</li>
+                            <li><strong>검증 방식 포함:</strong> "이 테스트 코드를 돌려서 확인해" 처럼 명확한 검증법을 제시하세요.</li>
+                            <li><strong>Plan Mode 우선:</strong> 냅다 코딩시키지 말고 <code>/plan</code> 으로 방향부터 점검하세요.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Tip 3 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-slate-200 dark:border-gray-700 shadow-sm md:col-span-2 hover:-translate-y-1 transition-transform duration-300">
+                        <div class="text-emerald-500 mb-4">
+                            <i class="fa-solid fa-microchip text-2xl"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-4">효율적인 모델 선택 가이드 (비용 절감)</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-lg border border-slate-100 dark:border-gray-700">
+                                <div class="font-bold text-slate-800 dark:text-slate-200 mb-2 flex justify-between items-center">
+                                    <span>Haiku 4.5 <span class="text-xs font-normal text-slate-500 ml-1">(기본)</span></span>
+                                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">가장 저렴</span>
+                                </div>
+                                <div class="text-sm text-slate-500 dark:text-slate-400">파일 읽기, 단순 텍스트 수정, 테스트 코드 작성, Lint 적용 등 단순 반복 작업의 70%를 담당합니다.</div>
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-lg border border-slate-100 dark:border-gray-700">
+                                <div class="font-bold text-slate-800 dark:text-slate-200 mb-2 flex justify-between items-center">
+                                    <span>Sonnet 4.6 <span class="text-xs font-normal text-slate-500 ml-1">(메인)</span></span>
+                                    <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">밸런스</span>
+                                </div>
+                                <div class="text-sm text-slate-500 dark:text-slate-400">전반적인 개발의 주축. DB 스키마 설계, 복잡한 비즈니스 로직 작성, 주요 아키텍처 결정 시 사용합니다.</div>
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-lg border border-slate-100 dark:border-gray-700">
+                                <div class="font-bold text-slate-800 dark:text-slate-200 mb-2 flex justify-between items-center">
+                                    <span>Opus 4.7 <span class="text-xs font-normal text-slate-500 ml-1">(최후)</span></span>
+                                    <span class="text-xs bg-rose-100 text-rose-700 px-2 py-1 rounded">최고 성능</span>
+                                </div>
+                                <div class="text-sm text-slate-500 dark:text-slate-400">가장 비쌉니다. 개인 프로젝트 후반부에 다른 모델이 해결하지 못하는 아주 깊고 어려운 디버깅에만 가끔 사용합니다.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Notes Section -->
+            <div class="mb-16 pt-10 reveal">
+                <div class="max-w-4xl mx-auto bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-8 md:p-10 border border-amber-200 dark:border-amber-700/50 shadow-lg relative transform md:rotate-1 hover:rotate-0 transition-transform duration-300">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-red-400/50 dark:bg-red-500/30 rounded-sm opacity-80 -rotate-2 backdrop-blur-sm shadow-sm"></div>
+                    
+                    <h3 class="text-2xl font-bold text-amber-900 dark:text-amber-100 mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-pen-clip"></i> 수강생의 핵심 메모장
+                    </h3>
+                    
+                    <div class="space-y-6 font-mono text-amber-800 dark:text-amber-200/80 text-[15px] leading-relaxed">
+                        <div>
+                            <span class="font-bold text-amber-900 dark:text-amber-100 bg-amber-200/50 dark:bg-amber-800/50 px-2 py-0.5 rounded"># Part 0~1 : 에이전트란?</span>
+                            <ul class="mt-2 ml-4 list-disc space-y-1">
+                                <li>그동안 난 AI를 단순 '코드 복사기'로만 썼다 🤦‍♂️</li>
+                                <li>에이전트는 터미널 명령어도 치고 파일도 직접 수정하는 '자율 직원'이다.</li>
+                                <li><strong>핵심:</strong> 어떻게 할지 하나하나 지시하지 말고, 명확한 '목표'만 던져줄 것!</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <span class="font-bold text-amber-900 dark:text-amber-100 bg-amber-200/50 dark:bg-amber-800/50 px-2 py-0.5 rounded"># Part 2 : 하네스 (CLAUDE.md)</span>
+                            <ul class="mt-2 ml-4 list-disc space-y-1">
+                                <li>매번 새 채팅 열 때마다 "이거 Next.js고 Tailwind 써줘" 타이핑하는 건 엄청난 낭비.</li>
+                                <li>프로젝트 루트에 <code>CLAUDE.md</code> 하나 파서 스택, 명령어, 금지사항 적어두면 매번 자동 적용됨!</li>
+                                <li>프롬프트 캐싱 덕분에 API 비용도 90% 아낄 수 있다 💰</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <span class="font-bold text-amber-900 dark:text-amber-100 bg-amber-200/50 dark:bg-amber-800/50 px-2 py-0.5 rounded"># Part 3 : 플러그인 생태계</span>
+                            <ul class="mt-2 ml-4 list-disc space-y-1">
+                                <li><strong>Superpowers:</strong> 코드 짜기 전에 무조건 '테스트 코드' 먼저 짜게 강제함 (TDD). 안정성 최고.</li>
+                                <li><strong>gstack:</strong> <code>/office-hours</code> 치면 가상의 CEO가 등장해서 "이거 왜 만듦?" 하고 기획 방향 날카롭게 잡아줌.</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <span class="font-bold text-amber-900 dark:text-amber-100 bg-amber-200/50 dark:bg-amber-800/50 px-2 py-0.5 rounded"># Part 4~5 : 실전 협업 꿀팁</span>
+                            <ul class="mt-2 ml-4 list-disc space-y-1">
+                                <li>에이전트 하나한테 다 시키면 뻗는다. <strong>프론트/백엔드 서브 에이전트로 쪼개서 병렬로 일 시키기.</strong></li>
+                                <li><strong>⭐ 제일 중요 ⭐</strong> 무작정 코드 짜게 하지 말고, 무조건 <code>/plan</code> 모드부터 실행할 것!</li>
+                                <li>읽기 전용이라 돈도 거의 안 들고, 기획서부터 검토해서 헛발질(환각)을 방지할 수 있음.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-8 pt-4 border-t border-amber-200/50 dark:border-amber-700/30 text-right font-bold text-amber-700 dark:text-amber-400">
+                            - 2026. 05. 28. 오케스트레이션 완벽 마스터 🔥 -
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+    
+    <!-- Footer Section -->
+    <footer class="border-t border-slate-200 dark:border-gray-800 py-10 mt-auto bg-white dark:bg-gray-900/50">
+        <div class="max-w-7xl mx-auto px-6 sm:px-12 lg:px-24 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400 text-sm font-medium">
+                <i class="fa-solid fa-bolt text-xl"></i>
+                <span>&copy; 2026 Termux Setup. Open source project.</span>
+            </div>
+            <div class="text-slate-400 dark:text-slate-500 text-xs">
+                Generated by AI Coding Assistant
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Scroll reveal animation
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        // Trigger once on load
+        setTimeout(reveal, 100);
+    </script>
+</body>
+</html>
