@@ -87,9 +87,15 @@ chmod +x zsh-install.sh
 
 - `install.sh`: Full installation script. Performs package updates, program installation, and theme & font application.
 - `zsh-install.sh`: Zsh configuration-only script. Quickly sets up Oh My Zsh and plugins only.
+- `index.html`: Project landing page.
 - `.termux/`: Directory containing Termux app configuration files (fonts, colors).
     - `colors.properties`: Snazzy color theme definition.
-    - `font.ttf`, `alternative.ttf`: Powerline support fonts.
+    - `font.ttf`: Active Powerline support font.
+    - `change-font.sh`: Interactive script to switch between available Nerd Fonts.
+    - `*.ttf` (Cascadia Code NF, Consolas NF, Google Sans Code NF, Monaco NF, etc.): Available font files.
+- `template/`: HTML template and design guide for building pages.
+    - `base_template.html`: Base HTML template.
+    - `html_design_guide.md`: Modern UI/UX design guidelines.
 - `.vimrc`: Vim editor configuration file.
 - `.gitconfig`: Basic Git configuration file.
 

@@ -85,9 +85,15 @@ chmod +x zsh-install.sh
 
 - `install.sh`: 전체 설치 스크립트. 패키지 업데이트, 프로그램 설치, 테마 및 폰트 적용을 수행합니다.
 - `zsh-install.sh`: Zsh 설정 전용 스크립트. Oh My Zsh 및 플러그인만 빠르게 설정합니다.
+- `index.html`: 프로젝트 랜딩 페이지.
 - `.termux/`: Termux 앱의 설정 파일(폰트, 색상)이 포함된 디렉토리입니다.
     - `colors.properties`: Snazzy 컬러 테마 정의.
-    - `font.ttf`, `alternative.ttf`: Powerline 지원 폰트.
+    - `font.ttf`: 활성 Powerline 지원 폰트.
+    - `change-font.sh`: 사용 가능한 Nerd Font 간 전환을 위한 대화형 스크립트.
+    - `*.ttf` (Cascadia Code NF, Consolas NF, Google Sans Code NF, Monaco NF 등): 사용 가능한 폰트 파일.
+- `template/`: 페이지 생성을 위한 HTML 템플릿 및 디자인 가이드.
+    - `base_template.html`: 기본 HTML 템플릿.
+    - `html_design_guide.md`: 모던 UI/UX 디자인 가이드라인.
 - `.vimrc`: Vim 에디터 설정 파일.
 - `.gitconfig`: 기본 Git 설정 파일.
 
